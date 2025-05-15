@@ -1,0 +1,15 @@
+
+services:
+  iris:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+            IRIS_USERNAME: superuser
+            IRIS_PASSWORD: SYS
+    hostname: mcpdemo
+    container_name: mcpdemo
+    ports: 
+      - 1980:1972
+      - 52880:52773
