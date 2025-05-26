@@ -172,3 +172,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+.vscode/settings.json
+secret/openai.key
+secret/deepseek.key
+.chainlit
+app/.chainlit
+app/__pycache__
+.files
+app/chainlit.md
