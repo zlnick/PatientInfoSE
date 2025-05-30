@@ -1,0 +1,7 @@
+fastapi 
+uvicorn 
+mcp
+mcp[cli]
+fastmcp
+uv
+intersystems-irispython

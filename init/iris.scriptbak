@@ -1,0 +1,44 @@
+zn "%SYS"
+// Unexpire passwords and set up passwordless mode to simplify dev use.
+do ##class(Security.Users).UnExpireUserPasswords("*")
+
+/*
+// Install FHIR Server
+set ns="FHIRSERVER"
+zn "HSLIB"
+set namespace=ns
+Set appKey = "/csp/healthshare/fhirserver/fhir/r4"
+Set strategyClass = "HS.FHIRServer.Storage.JsonAdvSQL.InteractionsStrategy"
+set metadataPackages = $lb("hl7.fhir.r4.core@4.0.1")
+Set metadataConfigKey = "HL7v40"
+
+// Install a Foundation namespace and change to it
+Do ##class(HS.Util.Installer.Foundation).Install(namespace)
+zn namespace
+
+// Install elements that are required for a FHIR-enabled namespace
+do ##class(HS.FHIRServer.Installer).InstallNamespace()
+
+// Install an instance of a FHIR Service into the current namespace
+if '##class(HS.FHIRServer.ServiceAdmin).EndpointExists(appKey) { do ##class(HS.FHIRServer.Installer).InstallInstance(appKey, strategyClass, metadataPackages) }
+
+set strategy = ##class(HS.FHIRServer.API.InteractionsStrategy).GetStrategyForEndpoint(appKey)
+set config = strategy.GetServiceConfigData()
+set config.DebugMode = 4
+do strategy.SaveServiceConfigData(config)
+*/
+
+// Install MCP namespace
+set mcpns = "MCP"
+zn "HSLIB"
+Do ##class(HS.Util.Installer.Foundation).Install(mcpns)
+
+//zn "USER"
+// this should be the place for individual application code.
+//do $System.OBJ.LoadDir("/irisdev/app/src/","ck",,1)
+
+//zpm "load /irisdev/app -v":1:1
+halt
+EOF
+
+exit 0
