@@ -20,3 +20,16 @@ def parse_mcp_result(result):
     else:
         parsed_contents.append(("unknown", str(result)))
     return parsed_contents
+
+
+def get_result_value(data):
+    """
+    假设经parse_mcp_result处理过的result一定会采用[('text', '24')]这样的结构，但text标签会变。
+    从中取出变量的值，如上例中的24。
+    """
+    if isinstance(data, list) and len(data) > 0:
+        item = data[0]
+        if isinstance(item, tuple) and len(item) > 1:
+            return item[1]
+    return None
+   

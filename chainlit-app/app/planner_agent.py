@@ -49,17 +49,17 @@ async def generate_plan(history, user_input, tools):
    {{
      "action": "call_tool" 或 "llm_answer",
      "tool": 工具名 (如action为call_tool时填写，否则为null),
-     "input": 输入参数 (dict，字段名与工具定义严格一致。llm_answer时为字符串),
-     "result_var": 本步结果变量名（如有依赖，用$var名引用）,
+     "input": 输入参数 (dict，字段名与工具定义严格一致(如有依赖，用$var名引用，例如变量名为var，则字段名必须为只包括一个'$'符号的$var)。),
+     "result_var": 本步结果变量名（如有依赖，用$var名引用，例如变量名为var，则字段名必须为只包括一个'$'符号的$var。多步plan间如有依赖，用result_var实现数据流，即上一步的result_var变量将被下一步通过input引用实现依赖传递。禁止凭空捏造上下文中不存在的变量作为某一步的输入。）,
      "description": "本步意图说明"
    }}
-3. 多步plan间如有依赖，用result_var实现数据流。
+3. 多步plan间如有依赖，用result_var实现数据流，即上一步的result_var变量将被下一步通过input引用实现依赖传递。禁止凭空捏造上下文中不存在的变量作为某一步的输入。
 4. 最终输出格式：
 {{
   "plan": [step1, step2, ...],
   "explanation": "简要说明你的计划拆解思路"
 }}
-仅输出严格JSON格式plan和explanation，不要输出其他内容。
+仅输出严格JSON格式plan和explanation，不要输出其他内容，不要输出"```json"这样的标签。
 """
 
     completion = await client.chat.completions.create(
@@ -67,7 +67,8 @@ async def generate_plan(history, user_input, tools):
         messages=[
             {"role": "system", "content": "你是一个计划生成Agent，只负责输出JSON结构计划"},
             {"role": "user", "content": prompt},
-        ]
+        ],
+        temperature=0.01
     )
     # 抽取完整的JSON体
     response = completion.choices[0].message.content

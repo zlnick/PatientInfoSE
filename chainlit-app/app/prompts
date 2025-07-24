@@ -1,0 +1,23 @@
+def compose_prompt(history_str, msg_content, tool_descriptions):
+    return f"""
+你是一个智能助手。以下是本轮对话历史：
+{history_str}
+
+用户最新问题是："{msg_content}"
+
+以下是当前可用 MCP 工具列表，包括输入字段说明：
+{tool_descriptions}
+
+请遵循以下规则：
+1️⃣ 若需要调用 MCP 工具，严格输出：
+Tool: 工具名称（与上列表完全匹配）
+Input: 工具输入参数（JSON格式，字段名严格对应工具定义）
+
+2️⃣ 若无需调用工具，请输出：
+Answer: 直接回答内容
+
+切记：
+✅ 工具名称和字段必须严格匹配
+✅ 不要生成无关字段
+✅ 如果没有合适工具，请直接输出 Answer
+"""

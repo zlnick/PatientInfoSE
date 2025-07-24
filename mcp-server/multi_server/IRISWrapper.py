@@ -9,8 +9,7 @@ def get_iris_config():
         "port": int(os.getenv("IRIS_PORT", 1980)),
         "namespace": os.getenv("IRIS_NAMESPACE", "MCP"),
         "username": os.getenv("IRIS_USERNAME", "superuser"),
-        "password": os.getenv("IRIS_PASSWORD", "SYS"),
-        "password": os.getenv("IRIS_MCPBRIDGE_ADDRESS", "http://localhost:52880/mcp/api")
+        "password": os.getenv("IRIS_PASSWORD", "SYS")
     }
 
     #logger.info("Server configuration: iris://" + config["hostname"] + ":" + str(config["port"]) + "/" + config["namespace"])
