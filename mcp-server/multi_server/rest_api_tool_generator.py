@@ -4,6 +4,7 @@ import json
 import types
 import asyncio
 import os
+import logging
 from typing import Dict, Any, Callable
 import base64
 
@@ -27,11 +28,17 @@ class RESTAPIToolGenerator:
             # 创建函数签名
             signature = self._create_function_signature(api["input_schema"])
             
+            # 获取额外参数信息
+            path_params = api.get("path_params", [])
+            query_params = api.get("query_params", [])
+            
             # 创建函数实现
             func_impl = self._create_function_implementation(
                 api["api_path"],
                 api["method"],
-                signature
+                signature,
+                path_params,
+                query_params
             )
             
             # 创建函数对象
@@ -98,12 +105,15 @@ class RESTAPIToolGenerator:
         }
         return type_mapping.get(json_type, Any)
     
-    def _create_function_implementation(self, api_path: str, method: str, signature: Dict) -> Callable:
+    def _create_function_implementation(self, api_path: str, method: str, signature: Dict, 
+                                        path_params: list, query_params: list) -> Callable:
         """
-        创建函数实现
+        创建函数实现（支持路径参数）
         :param api_path: API 路径
         :param method: HTTP 方法
         :param signature: 函数签名
+        :param path_params: 路径参数列表
+        :param query_params: 查询参数列表
         :return: 可调用的函数
         """
         method = method.lower()
@@ -113,17 +123,37 @@ class RESTAPIToolGenerator:
         func_def = f"async def {signature.get('name', 'api_function')}({', '.join(params)}):\n"
         
         # 添加函数体 - 完整的 HTTP 请求实现
-        # 注意：这里我们直接在函数体中生成 headers
         func_body = f"""
     # 准备请求参数
-    payload = {{"""
-        
-        for param in params:
+    # 1. 提取路径参数
+    path_params = {{"""
+        for param in path_params:
             func_body += f"""
         '{param}': {param},"""
-        
         func_body += f"""
     }}
+    
+    # 2. 提取查询参数
+    query_params = {{}}
+    for param in {query_params}:
+        if param in locals() and locals()[param] is not None:
+            query_params[param] = locals()[param]
+    
+    # 3. 准备请求体（仅用于非GET请求）
+    json_payload = {{}}
+    if "{method}" != "get":
+        body_params = {params}
+        for param in body_params:
+            if param not in path_params and param not in query_params and param in locals():
+                json_payload[param] = locals()[param]
+    
+    # 构建最终URL（替换路径参数）
+    final_url = f"{api_path}"
+    if path_params:
+        for param, value in path_params.items():
+            # 安全处理路径参数占位符
+            placeholder = "{{" + param + "}}"
+            final_url = final_url.replace(placeholder, str(value))
     
     # 准备认证头
     headers = {{}}
@@ -137,13 +167,19 @@ class RESTAPIToolGenerator:
     # 发送 HTTP 请求
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.request(
-                method="{method}",
-                url="{api_path}",
-                headers=headers,  # 直接传递字典变量
-                json=payload,
-                timeout=10.0
-            )
+            request_args = {{
+                "method": "{method}",
+                "url": final_url,
+                "headers": headers,
+                "params": query_params if query_params else None,
+                "json": json_payload if json_payload else None,
+                "timeout": 10.0
+            }}
+            
+            # 清除空值参数
+            request_args = {{k: v for k, v in request_args.items() if v is not None}}
+            
+            response = await client.request(**request_args)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
@@ -163,8 +199,14 @@ class RESTAPIToolGenerator:
         
         # 执行函数代码
         local_vars = {}
-        # 确保 os 模块在生成的函数中可用
-        exec_globals = {"os": os, "base64": base64}
+        # 确保必要的模块在生成的函数中可用
+        exec_globals = {
+            "os": os, 
+            "base64": base64,
+            "json": json,
+            "httpx": httpx,
+            "logger": logging.getLogger(__name__)  # 添加logger
+        }
         exec(full_func_code, exec_globals, local_vars)
         
         return local_vars[signature.get('name', 'api_function')]
@@ -181,6 +223,9 @@ class RESTAPIToolGenerator:
 
 # 示例使用
 if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    
     # 示例 API 元数据
     api_metadata = [
         {

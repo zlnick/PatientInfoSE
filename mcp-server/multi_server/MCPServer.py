@@ -64,8 +64,14 @@ async def query_fhir(resource_type: str, filters: dict) -> dict:
         raise Exception("未设置 FHIR_BASE_URL 环境变量")
 
     # 构造查询URL
-    query_params = '&'.join([f"{k}={v}" for k, v in filters.items()])
-    url = f"{fhir_base_url}/{resource_type}?{query_params}"
+    url = f"{fhir_base_url}/{resource_type}"
+    query_params = ''
+    for k, v in filters.items():
+        if k == 'id':
+            url = url + f"/{v}" 
+        else:
+            query_params = '&'.join([f"{k}={v}" for k, v in filters.items()])
+    url = f"{url}?{query_params}"
 
     async with httpx.AsyncClient() as client:
         try:
@@ -81,6 +87,8 @@ if __name__ == "__main__":
 
     # 动态获取IRIS上的API定义
     spec = json.loads(asyncio.run(get_iris_apis()))
+    #补丁：由于IRIS会自动以域名+端口作为host的根路径（如mcpdemo:52773），暂时需要手动将其替换为docker环境下可访问的地址如(localhost:52880)
+    spec['host'] = 'localhost:52880'
     print(spec)
     # 将OpenAI 2.0版本的REST API规范转换为如下格式的Python JSON对象
     """

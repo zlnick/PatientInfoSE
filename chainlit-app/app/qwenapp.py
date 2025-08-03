@@ -1,5 +1,3 @@
-from http import HTTPStatus
-import re
 from dotenv import load_dotenv
 import os
 import uuid
@@ -7,20 +5,15 @@ from openai import AsyncOpenAI
 from mcp import ClientSession
 import chainlit as cl
 import json
-from utils import parse_mcp_result,get_result_value
+from utils import parse_mcp_result,get_result_value,get_practitioner,get_official_name
 from context_manager import IRISContextManager
 from planner_agent import generate_plan
 from context_aware_agent import can_answer_from_context, generate_context_answer
-import requests
-import dashscope
-from chainlit.element import ElementBased
-from dashscope.audio.tts_v2 import SpeechSynthesizer
-from dashscope.common.constants import FilePurpose
-from io import BytesIO
-import tempfile
-
 
 load_dotenv()
+prac_id = os.getenv("Practioner_ID")
+practioner = get_practitioner(prac_id)
+prac_name = get_official_name(practioner)
 
 # 初始化IRIS上下文管理器
 ctx = IRISContextManager(
@@ -38,14 +31,18 @@ client = AsyncOpenAI(
 )
 
 @cl.on_chat_start
-def on_chat_start():
+async def on_chat_start():
     # 每次新会话分配一个session_id并创建doc
     session_id = str(uuid.uuid4())
     cl.user_session.set("session_id", session_id)
     cl.user_session.set("counter", 0)
     cl.user_session.set("temp_values",{})
+    cl.logger.info(f"医生{prac_id}的名字是{prac_name}")
+    #cl.user_session.set("practitioner",)
     cl.logger.info(f"新会话分配 session_id: {session_id}")
-    
+    await cl.Message(
+        content=f"欢迎您，{prac_name}医生，我是您的门诊助手。我会协助您完成门诊，欢迎您向我提出任何问题。",
+    ).send()
 
 @cl.on_mcp_connect
 async def on_mcp_connect(connection, session: ClientSession):
@@ -70,6 +67,8 @@ def get_or_create_session(cl, ctx):
     # 判断IRIS是否已有此session，没有才创建
     if ctx.get_session(session_id) is None:
         ctx.create_session(session_id)  # meta参数可以省略
+        # 创建session时绑定医生身份
+        save_assistant_message(ctx,session_id,f"我是一个临床医生的门诊助手。现在登录的临床医生的资源id是{prac_id},他的姓名是{prac_name}。我们用中文交流。")
     return session_id
 
 def save_user_message(ctx, session_id, msg):
@@ -98,6 +97,7 @@ def build_tool_descriptions(mcp_tools):
 
 async def call_mcp_tool(session, tool_name, tool_input):
     try:
+        cl.logger.info(f"基于输入 {tool_input} 调用工具 {tool_name} ")
         result = await session.call_tool(tool_name, tool_input)
         return str(result)
     except Exception as e:
@@ -122,17 +122,16 @@ async def on_message(msg: cl.Message):
     history_str, history = get_history_str(ctx, session_id)
 
     # === 上下文优先判断 ===
-    # 先判断上下文是否足够回答问题
+    # 先判断上下文中的数据是否足够回答问题
     can_answer, reasoning = await can_answer_from_context(history, msg.content, client)
-    cl.logger.info(f"历史信息： {history}")
-    cl.logger.info(f"判断状态： {can_answer}, 原因是: {reasoning}")
+    #cl.logger.info(f"历史信息1： {history_str}")
+    #cl.logger.info(f"历史信息2： {history}")
+    #cl.logger.info(f"判断状态： {can_answer}, 原因是: {reasoning}")
     save_user_message(ctx, session_id, msg)
-    # 显示判断结果
-    await cl.Message(
-        content=f"🧠 上下文判断: {'可以' if can_answer else '不可以'}直接回答\n"
-                f"📝 判断理由: {reasoning}"
-    ).send()
-    
+    # 用Step显示判断结果    
+    async with cl.Step("判断结果显示") as step:
+        step.output = f"🧠 上下文判断: {'可以' if can_answer else '不可以'}直接回答\n"+ f"📝 判断理由: {reasoning}"
+
     if can_answer:
         # 直接基于上下文生成回答
         answer = await generate_context_answer(history, msg.content, client)
@@ -152,7 +151,7 @@ async def on_message(msg: cl.Message):
             tool_list.extend(v)
 
     # 生成多步 plan
-    plan_json = await generate_plan(history, msg.content, tool_list)
+    plan_json = await generate_plan(history, msg.content, tool_list,client)
     plan = plan_json.get("plan", [])
     explanation = plan_json.get("explanation", "")
 
@@ -169,7 +168,7 @@ async def on_message(msg: cl.Message):
         result_var = step.get("result_var")
         step_desc = step.get("description", "")
         process_steps.append(f"Step {idx+1}: {step_desc}")
-        cl.logger.info(input_data)
+        #cl.logger.info(input_data)
         # 如果input_data是Dict类型，则表明其中包含了上下文中保存的临时变量，需从temp_values中提取对应的临时变量替换其值
         if isinstance(input_data, dict):
             for key in input_data:
@@ -189,7 +188,10 @@ async def on_message(msg: cl.Message):
                 for content_type, content_value in parsed_contents:
                     if content_type == "text":
                         answer_texts.append(content_value)
-                        await cl.Message(content=f"[{tool}] {content_value}").send()
+                        #打印工具返回结果
+                        async with cl.Step(name="工具返回结果") as step:
+                            step.output = content_value
+                        #await cl.Message(content=f"[{tool}] {content_value}").send()
                     elif content_type == "file":
                         await cl.Message(content=f"文件链接: {content_value}").send()
                     elif content_type == "image":
@@ -232,6 +234,7 @@ async def on_message(msg: cl.Message):
     counter += 1
     cl.user_session.set("counter", counter)
     process_steps.append(f"你已经发送了 {counter} 条消息！")
-    await cl.Message(content="📝 本轮多步推理/执行过程：\n" + "\n".join(process_steps)).send()
+    #await cl.Message(content="📝 本轮多步推理/执行过程：\n" + "\n".join(process_steps)).send()
+
 
 

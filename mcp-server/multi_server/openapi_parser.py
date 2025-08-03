@@ -1,5 +1,5 @@
+import re
 import json
-import os
 from typing import Dict, List, Any
 
 def convert_swagger_type_to_json_schema_type(swagger_type: str, swagger_format: str = None) -> str:
@@ -20,12 +20,8 @@ def convert_swagger_type_to_json_schema_type(swagger_type: str, swagger_format: 
         "array": "array"
     }
     
-    # 特殊处理格式
-    if swagger_format:
-        if swagger_format == "int32" or swagger_format == "int64":
-            return "integer"
-        elif swagger_format == "float" or swagger_format == "double":
-            return "number"
+    if swagger_format and swagger_format in type_mapping:
+        return type_mapping[swagger_format]
     
     return type_mapping.get(swagger_type, "object")
 
@@ -34,62 +30,77 @@ def resolve_ref(spec: Dict, ref_path: str) -> Dict:
     if not ref_path.startswith("#/"):
         return {}
     
-    parts = ref_path[2:].split("/")  # 去掉开头的 "#/"
+    parts = ref_path[2:].split("/")
     current = spec
     for part in parts:
         current = current.get(part, {})
     return current
 
-def process_schema(spec: Dict, schema: Dict) -> Dict:
-    """递归处理 schema 及其引用"""
-    if not schema:
-        return {}
-    
-    # 处理引用
-    if "$ref" in schema:
-        ref_schema = resolve_ref(spec, schema["$ref"])
-        return process_schema(spec, ref_schema)
-    
-    # 处理数组类型
-    if schema.get("type") == "array":
-        items = schema.get("items", {})
-        return {
-            "type": "array",
-            "items": process_schema(spec, items)
-        }
-    
-    # 处理对象类型
-    if schema.get("type") == "object" or "properties" in schema:
-        properties = {}
-        for prop_name, prop_def in schema.get("properties", {}).items():
-            properties[prop_name] = process_schema(spec, prop_def)
-        
-        return {
-            "type": "object",
-            "properties": properties,
-            "required": schema.get("required", [])
-        }
-    
-    # 基本类型
-    return {
-        "type": convert_swagger_type_to_json_schema_type(
-            schema.get("type", "object"),
-            schema.get("format")
-        ),
-        "title": schema.get("title", ""),
-        "description": schema.get("description", "")
+def extract_parameters(operation: Dict, spec: Dict) -> Dict:
+    """
+    提取所有参数（路径、查询、body）
+    返回格式: {
+        "path_params": {param_name: param_schema},
+        "query_params": {param_name: param_schema},
+        "body_params": {param_name: param_schema},
+        "required": [param_name]
     }
+    """
+    parameters = {
+        "path_params": {},
+        "query_params": {},
+        "body_params": {},
+        "required": []
+    }
+    
+    for param in operation.get("parameters", []):
+        param_in = param.get("in")
+        param_name = param.get("name")
+        required = param.get("required", False)
+        
+        if required:
+            parameters["required"].append(param_name)
+        
+        # 获取参数模式
+        schema = param.get("schema", {})
+        if "$ref" in schema:
+            schema = resolve_ref(spec, schema["$ref"])
+        
+        if not schema:
+            # 简单参数
+            schema = {
+                "type": param.get("type", "string"),
+                "format": param.get("format"),
+                "description": param.get("description", "")
+            }
+        
+        # 根据位置分类
+        if param_in == "path":
+            parameters["path_params"][param_name] = schema
+        elif param_in == "query":
+            parameters["query_params"][param_name] = schema
+        elif param_in == "body":
+            # 处理 body 参数（可能是嵌套对象）
+            if "properties" in schema:
+                for prop_name, prop_def in schema["properties"].items():
+                    if "$ref" in prop_def:
+                        ref_def = resolve_ref(spec, prop_def["$ref"])
+                        parameters["body_params"][prop_name] = ref_def
+                    else:
+                        parameters["body_params"][prop_name] = prop_def
+                
+                # 添加必填字段
+                if "required" in schema:
+                    parameters["required"].extend(schema["required"])
+    
+    return parameters
 
 def generate_tool_list(openapi_spec: Dict) -> List[Dict]:
-    """从 OpenAPI 2.0 规范生成工具列表"""
+    """从 OpenAPI 2.0 规范生成工具列表（修复路径参数问题）"""
     tools = []
-
     definitions = openapi_spec.get("definitions", {})
-    # 这里还有点问题，经IRIS注册后，host会自动变成域名+端口形态，对于没有进行域名绑定的服务器来说是无效的，暂时写死
-    host = "localhost:52880"
-    # openapi_spec.get("host", {})
-    basePath = openapi_spec.get("basePath", {})
-    schemes = openapi_spec.get("schemes", {})
+    base_url = f"{openapi_spec['schemes'][0]}://{openapi_spec['host']}{openapi_spec['basePath']}"
+    
     # 遍历所有路径和方法
     for path, path_item in openapi_spec.get("paths", {}).items():
         for method, operation in path_item.items():
@@ -98,44 +109,38 @@ def generate_tool_list(openapi_spec: Dict) -> List[Dict]:
                 
             # 获取操作信息
             operation_id = operation.get("operationId", f"{method}_{path.replace('/', '_')}")
-            api_path = schemes[0]+"://"+host+basePath+path
             description = operation.get("description", operation.get("summary", ""))
             
-            # 准备输入模式
+            # 提取所有参数
+            params_info = extract_parameters(operation, openapi_spec)
+            
+            # 创建统一的属性集合
             properties = {}
-            required = []
-            schema = None
+            properties.update(params_info["path_params"])
+            properties.update(params_info["query_params"])
+            properties.update(params_info["body_params"])
             
-            # 处理参数
-            for param in operation.get("parameters", []):
-                param_in = param.get("in")
-                
-                # 只处理 body 参数（对于 POST/PUT/PATCH）
-                if param_in == "body":
-                    if "schema" in param:
-                        schema = process_schema(openapi_spec, param["schema"])
-                        properties = schema.get("properties", {})
-                        required = schema.get("required", [])
-                    break
+            # 为属性添加类型信息
+            for prop_name, prop_def in properties.items():
+                prop_type = convert_swagger_type_to_json_schema_type(
+                    prop_def.get("type", "string"),
+                    prop_def.get("format")
+                )
+                properties[prop_name] = {
+                    "type": prop_type,
+                    "description": prop_def.get("description", "")
+                }
             
-            # 如果没有 body 参数，尝试从 operation 获取
-            if not schema:
-                if "requestBody" in operation:
-                    content = operation["requestBody"].get("content", {})
-                    for content_type, media_type in content.items():
-                        if "schema" in media_type:
-                            schema = process_schema(openapi_spec, media_type["schema"])
-                            properties = schema.get("properties", {})
-                            required = schema.get("required", [])
-                            break
-            
-            # 为操作创建输入模式
+            # 创建输入模式
             input_schema = {
                 "type": "object",
                 "title": f"{operation_id}Arguments",
                 "properties": properties,
-                "required": required
+                "required": params_info["required"]
             }
+            
+            # 完整的 API 路径
+            api_path = f"{base_url}{path}"
             
             # 添加到工具列表
             tools.append({
@@ -143,30 +148,10 @@ def generate_tool_list(openapi_spec: Dict) -> List[Dict]:
                 "description": description.strip(),
                 "api_path": api_path,
                 "method": method.lower(),
-                "input_schema": input_schema
+                "input_schema": input_schema,
+                # 额外信息用于请求构造
+                "path_params": list(params_info["path_params"].keys()),
+                "query_params": list(params_info["query_params"].keys())
             })
     
     return tools
-
-# 示例使用
-if __name__ == "__main__":
-    # 加载 OpenAPI 规范
-    file_path = "MCPToolsAPI.json"
-    
-    try:
-        # 明确指定 UTF-8 编码打开文件
-        with open(file_path, "r", encoding="utf-8") as f:
-            openapi_spec = json.load(f)
-        
-        # 生成工具列表
-        tool_list = generate_tool_list(openapi_spec)
-        
-        # 打印结果
-        print(json.dumps(tool_list, indent=2, ensure_ascii=False))
-    
-    except FileNotFoundError:
-        print(f"错误：文件 '{file_path}' 不存在")
-    except json.JSONDecodeError as e:
-        print(f"JSON 解析错误: {e}")
-    except Exception as e:
-        print(f"发生错误: {e}")
