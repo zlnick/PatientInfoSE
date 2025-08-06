@@ -5,7 +5,7 @@ from openai import AsyncOpenAI
 from mcp import ClientSession
 import chainlit as cl
 import json
-from utils import parse_mcp_result,get_result_value,get_practitioner,get_official_name
+from utils import parse_mcp_result,get_result_value,get_practitioner,get_official_name,get_table_meta
 from context_manager import IRISContextManager
 from planner_agent import generate_plan
 from context_aware_agent import can_answer_from_context, generate_context_answer
@@ -14,6 +14,15 @@ load_dotenv()
 prac_id = os.getenv("Practioner_ID")
 practioner = get_practitioner(prac_id)
 prac_name = get_official_name(practioner)
+table_meta = get_table_meta(os.getenv("TABLE_META_ENDPOINT"),os.getenv("TABLE_NS"),os.getenv("TABLE_SCHEME"))
+assistant_name = os.getenv("Assistant_NAME")
+assistant_prompt = f"""
+你是一个临床医生的门诊助手。你将用医生容易阅读的自然语言和医生用中文交流。不要向医生返回对FHIR、SQL表等数据的技术信息，你将会将这些信息用自然语言描述后再向医生反馈。
+你非常了解HL7 FHIR协议，知道资源id指的是id参数。
+你还知道如下临床知识：
+血压的字典码是85354-9。
+当接收到一批同一患者的数据时，除了向医生描述患者数据，还应从临床角度进行总结。
+"""
 
 # 初始化IRIS上下文管理器
 ctx = IRISContextManager(
@@ -41,7 +50,7 @@ async def on_chat_start():
     #cl.user_session.set("practitioner",)
     cl.logger.info(f"新会话分配 session_id: {session_id}")
     await cl.Message(
-        content=f"欢迎您，{prac_name}医生，我是您的门诊助手。我会协助您完成门诊，欢迎您向我提出任何问题。",
+        content=f"欢迎您，{prac_name}医生，我是您的门诊助手{assistant_name}。我会协助您完成门诊，欢迎您向我提出任何问题。"
     ).send()
 
 @cl.on_mcp_connect
@@ -57,7 +66,6 @@ async def on_mcp_connect(connection, session: ClientSession):
     except Exception as e:
         cl.logger.error(f"获取 MCP 工具列表时出错: {e}")
 
-# context_manager和其他import省略
 
 def get_or_create_session(cl, ctx):
     session_id = cl.user_session.get("session_id")
@@ -214,7 +222,7 @@ async def on_message(msg: cl.Message):
             completion = await client.chat.completions.create(
                 model="qwen-plus",
                 messages=[
-                    {"role": "system", "content": "你是一个智能助手"},
+                    {"role": "system", "content": assistant_prompt},
                     {"role": "user", "content": llm_prompt},
                 ],
                 temperature=0.01
@@ -235,6 +243,5 @@ async def on_message(msg: cl.Message):
     cl.user_session.set("counter", counter)
     process_steps.append(f"你已经发送了 {counter} 条消息！")
     #await cl.Message(content="📝 本轮多步推理/执行过程：\n" + "\n".join(process_steps)).send()
-
 
 

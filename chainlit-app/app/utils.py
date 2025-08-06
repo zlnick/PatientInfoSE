@@ -2,6 +2,7 @@
 import requests
 import json
 import base64
+import os
 
 def parse_mcp_result(result):
     """
@@ -115,6 +116,43 @@ def get_official_name(result):
     
     # 若遍历完未找到符合条件的条目
     return '未找到use为official的name信息'
+
+def get_table_meta(url,namespace,scheme):
+    try:
+        # 准备认证头
+        headers = {}
+        username = os.getenv("IRIS_USERNAME")
+        password = os.getenv("IRIS_PASSWORD")
+        headers = {}
+        if username and password:
+            # 创建基本认证头
+            credentials = f"{username}:{password}"
+            encoded_credentials = base64.b64encode(credentials.encode('utf-8')).decode('utf-8')
+            headers["Authorization"] = f"Basic {encoded_credentials}"
+        # 发送GET请求
+        response = requests.get(url+'/'+namespace+'/'+scheme,headers=headers)
+        
+        # 检查请求是否成功
+        response.raise_for_status()  # 如果响应状态码不是200，会抛出HTTPError异常
+        
+        # 解析JSON响应
+        json_data = response.json()
+        
+        # 打印JSON数据
+        print("API返回的表元数据：")
+        print(json.dumps(json_data, indent=2, ensure_ascii=False))
+        return json_data
+    except requests.exceptions.HTTPError as errh:
+        print(f"HTTP错误: {errh}")
+    except requests.exceptions.ConnectionError as errc:
+        print(f"连接错误: {errc}")
+    except requests.exceptions.Timeout as errt:
+        print(f"超时错误: {errt}")
+    except requests.exceptions.RequestException as err:
+        print(f"请求异常: {err}")
+    except json.JSONDecodeError:
+        print("无法解析响应为JSON格式")
+    return None
 
 # 示例用法
 if __name__ == "__main__":

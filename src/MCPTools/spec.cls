@@ -1,0 +1,127 @@
+Class MCPTools.spec Extends %REST.Spec [ ProcedureBlock ]
+{
+
+XData OpenAPI [ MimeType = application/json ]
+{
+{
+  "swagger":"2.0",
+  "info":{
+    "title":"基于IRIS的MCP工具集",
+    "description":"由IRIS提供，用于扩展AI能力，暴露IRIS上功能的API集合",
+    "version":"1.0.0"
+  },
+  "basePath":"/MCP/MCPTools",
+  "schemes":[
+    "http"
+  ],
+  "consumes":[
+    "application/json"
+  ],
+  "produces":[
+    "application/json"
+  ],
+  "paths":{
+    "/Math/add":{
+      "post":{
+        "summary":"两个数相加",
+        "description":"两个数相加，返回两数之和。",
+        "operationId":"addNumbers",
+        "parameters":[
+          {
+            "in":"body",
+            "name":"numbers",
+            "description":"The two numbers to add",
+            "required":true,
+            "schema":{
+              "$ref":"#/definitions/AddRequest"
+            }
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"Successful addition",
+            "schema":{
+              "$ref":"#/definitions/AddResponse"
+            }
+          },
+          "400":{
+            "description":"Invalid input",
+            "schema":{
+              "$ref":"#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/outpatient_appointment/{docId}":{
+      "get":{
+        "description":"查询医生当天的门诊就诊预约。:param docId: 医生的FHIR资源id,:return: 查询结果（包含Appointment资源的FHIR Bundle JSON，其中每一条Appointment资源表示一次预约）",
+        "operationId":"getAppointments",
+        "parameters":[
+          {
+            "name":"docId",
+            "in":"path",
+            "description":"医生的FHIR资源id",
+            "required":true,
+            "type":"string"
+          }
+        ],
+        "responses":{
+          "200":{
+            "description":"OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions":{
+    "AddRequest":{
+      "type":"object",
+      "required":[
+        "a",
+        "b"
+      ],
+      "properties":{
+        "a":{
+          "type":"number",
+          "format":"float",
+          "description":"First number",
+          "example":5.2
+        },
+        "b":{
+          "type":"number",
+          "format":"float",
+          "description":"Second number",
+          "example":3.8
+        }
+      }
+    },
+    "AddResponse":{
+      "type":"object",
+      "properties":{
+        "result":{
+          "type":"number",
+          "format":"float",
+          "description":"Sum of the two numbers",
+          "example":9
+        }
+      }
+    },
+    "ErrorResponse":{
+      "type":"object",
+      "properties":{
+        "error":{
+          "type":"string",
+          "description":"Error message"
+        },
+        "details":{
+          "type":"string",
+          "description":"Additional error details"
+        }
+      }
+    }
+  }
+}
+}
+
+}

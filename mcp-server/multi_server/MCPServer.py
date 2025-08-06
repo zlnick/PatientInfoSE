@@ -56,7 +56,7 @@ async def query_fhir(resource_type: str, filters: dict) -> dict:
     """
     查询FHIR服务器上的指定资源，支持传入过滤条件
     :param resource_type: FHIR资源类型（如 'Observation', 'Patient'）
-    :param filters: 查询过滤条件（如 {'subject': 'Patient/794', 'code': '85354-9', 'date': 'ge2015-06-03'}）
+    :param filters: 查询过滤条件（如 {'subject': 'Patient/794', 'code': '85354-9', 'date': 'ge2015-06-03'}。）
     :return: 查询结果（FHIR Bundle JSON）
     """
     fhir_base_url = os.getenv("FHIR_BASE_URL")  # 你可以在 .env 文件中设置 FHIR API 地址
