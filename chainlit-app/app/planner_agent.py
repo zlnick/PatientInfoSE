@@ -36,7 +36,7 @@ async def generate_plan(history, user_input, tools, client):
 1. 若能用工具解决任何子任务，必须优先用tool。否则用LLM自身作答，类型为llm_answer。
 2. plan须输出为JSON数组，每步如下格式：
    {{
-     "action": "call_tool" 或 "llm_answer",
+     "action": "call_tool" 或 "llm_answer" 或 "call_agent",
      "tool": 工具名 (如action为call_tool时填写，否则为null),
      "input": 输入参数 (dict。如果要使用工具，则字段名与工具定义严格一致。）
        应根据计划上下文分析。如本步依赖于之前子任务产生的临时变量，必须用$var名引用。但input本身是一个json对象，可以使用多个属性或者再嵌入json对象。

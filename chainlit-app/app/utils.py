@@ -140,7 +140,7 @@ def get_table_meta(url,namespace,scheme):
         
         # 打印JSON数据
         print("API返回的表元数据：")
-        print(json.dumps(json_data, indent=2, ensure_ascii=False))
+        print(json.dumps(json_data, ensure_ascii=False))
         return json_data
     except requests.exceptions.HTTPError as errh:
         print(f"HTTP错误: {errh}")

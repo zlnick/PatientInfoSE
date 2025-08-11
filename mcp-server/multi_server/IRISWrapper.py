@@ -17,4 +17,3 @@ def get_iris_config():
         raise ValueError("Missing required database configuration")
 
     return config
-

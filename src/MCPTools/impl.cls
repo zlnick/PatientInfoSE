@@ -1,21 +1,11 @@
 /// 由IRIS提供，用于扩展AI能力，暴露IRIS上功能的API集合<br/>
 /// Business logic class defined by OpenAPI in MCPTools.spec<br/>
-/// Updated Jul 24, 2025 10:25:48
+/// Updated Aug 7, 2025 08:23:39
 Class MCPTools.impl Extends %REST.Impl [ ProcedureBlock ]
 {
 
 /// If ExposeServerExceptions is true, then details of internal errors will be exposed.
 Parameter ExposeServerExceptions = 0;
-
-/// 两个数相加，返回两数之和。<br/>
-/// The method arguments hold values for:<br/>
-///     numbers, The two numbers to add<br/>
-ClassMethod addNumbers(numbers As %DynamicObject) As %DynamicObject
-{
-    Set rtnObj = {}
-    Set rtnObj.result = numbers.a + numbers.b
-    Quit rtnObj
-}
 
 /// 查询医生当天的门诊就诊预约。:param docId: 医生的FHIR资源id,:return: 查询结果（包含Appointment资源的FHIR Bundle JSON，其中每一条Appointment资源表示一次预约）<br/>
 /// The method arguments hold values for:<br/>

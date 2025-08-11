@@ -17,38 +17,6 @@
     "application/json"
   ],
   "paths": {
-    "/Math/add": {
-      "post": {
-        "summary": "两个数相加",
-        "description": "两个数相加，返回两数之和。",
-        "operationId": "addNumbers",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "numbers",
-            "description": "The two numbers to add",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/AddRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful addition",
-            "schema": {
-              "$ref": "#/definitions/AddResponse"
-            }
-          },
-          "400": {
-            "description": "Invalid input",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          }
-        }
-      }
-    },
     "/outpatient_appointment/{docId}": {
       "get": {
         "description": "查询医生当天的门诊就诊预约。:param docId: 医生的FHIR资源id,:return: 查询结果（包含Appointment资源的FHIR Bundle JSON，其中每一条Appointment资源表示一次预约）",
