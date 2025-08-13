@@ -1,0 +1,8 @@
+chainlit
+openai
+dashscope
+numpy
+pandas
+plotly
+kaleido
+openpyxl
