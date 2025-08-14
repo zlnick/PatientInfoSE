@@ -31,6 +31,7 @@ assistant_prompt = f"""
 你还知道如下临床知识：
 血压的字典码是85354-9。
 当接收到一批同一患者的数据时，除了向医生描述患者数据，还应从临床角度进行总结。
+当医生试图为患者开药或询问药物是否适用时，你应当先检查上下文，查看是否已通过FHIR Patient资源的$everything操作获得了患者的所有信息。如果有，则结合患者信息和药物信息回答问题；如果没有，则先通过$everything操作获取患者的完整档案，再结合药品信息回答问题。
 """
 
 # 定义一个用于检测静音的阈值和一个用于结束一轮（对话或交互）的超时时间。
@@ -151,7 +152,7 @@ async def speech_to_text(audio_buffer):
 # chainlit 事件钩子
 @cl.on_chat_start
 async def on_chat_start():
-    # 每次新会话分配一个session_id并创建doc
+    # 每次新会话分配一个session_id并创建global
     #session_id = str(uuid.uuid4())
     session_id = get_or_create_session(cl, ctx)
     cl.user_session.set("session_id", session_id)

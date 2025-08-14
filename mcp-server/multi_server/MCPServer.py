@@ -94,9 +94,11 @@ async def query_fhir(resource_type: str, filters: dict) -> dict:
     患者用药可以用MedicationStatement来查询。
     :param resource_type: FHIR资源类型（如 'Observation', 'Patient'）
     :param filters: 查询过滤条件（如 {'subject': 'Patient/794', 'code': '85354-9', 'date': 'ge2015-06-03'}。）
-        注意，id、资源id这样的条件不对应参数identifier，而应该使用参数id
+        注意，id、资源id这样的条件不对应参数identifier，而应该使用参数id，如{'id': '794'}
         在检验检查项目中，其类型遵循SNOMED-CT术语，如下：
             {"血压":"85354-9"}
+        在需要查看患者的完整信息时，可通过FHIR操作$everything获得，此时资源类型可设为Patient，filters为{'subject': 'Patient/794', '$everything': ''}, 注意'$everything'属性的值设为空字符串。
+        filters参数有顺序，如果有多个参数同时出现，必须遵循id，$everything，其他参数的顺序。
     :return: 查询结果（FHIR Bundle JSON）
     """
     fhir_base_url = os.getenv("FHIR_BASE_URL")  # 你可以在 .env 文件中设置 FHIR API 地址
@@ -109,6 +111,8 @@ async def query_fhir(resource_type: str, filters: dict) -> dict:
     for k, v in filters.items():
         if k == 'id':
             url = url + f"/{v}" 
+        if k == '$everything':
+            url = url + "/$everything"
         else:
             query_params = '&'.join([f"{k}={v}" for k, v in filters.items()])
     url = f"{url}?{query_params}"
