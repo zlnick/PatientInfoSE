@@ -1,7 +1,7 @@
 import chainlit as cl
 import json
 
-async def generate_plan(history, user_input, tools, client):
+async def generate_plan(history, user_input, tools, client, llm_model):
     """
     自动生成执行计划，包含多步tool和llm_answer。
     返回JSON: { plan: [step1, step2, ...], explanation: "" }
@@ -33,10 +33,12 @@ async def generate_plan(history, user_input, tools, client):
 {tool_list_str}
 
 **要求**：
-1. 若能用工具解决任何子任务，必须优先用tool。否则用LLM自身作答，类型为llm_answer。
-2. plan须输出为JSON数组，每步如下格式：
+1. 若能用工具解决任何子任务，必须优先用tool，但禁止生成对没有注册的tool的调用。
+2. 如果用户询问药物使用的风险或者报销相关的问题，则必须先用FHIR的$everything操作重新查询患者的完整档案，以获得最新的情况，再医保规则查询工具获得医保规则，再用LLM作答，类型为risk_analyst，之后不要使用llm_answer。这个类型仅用于回答药物风险或报销相关问题，其它问题均不使用它。
+3. 否则用LLM自身作答，类型为llm_answer。
+4. plan须输出为JSON数组，每步如下格式：
    {{
-     "action": "call_tool" 或 "llm_answer" 或 "call_agent",
+     "action": "call_tool" 或 "llm_answer" 或 "risk_analyst",
      "tool": 工具名 (如action为call_tool时填写，否则为null),
      "input": 输入参数 (dict。如果要使用工具，则字段名与工具定义严格一致。）
        应根据计划上下文分析。如本步依赖于之前子任务产生的临时变量，必须用$var名引用。但input本身是一个json对象，可以使用多个属性或者再嵌入json对象。
@@ -49,20 +51,24 @@ async def generate_plan(history, user_input, tools, client):
         例如："result_var": "$patient_info" 
      "description": "本步意图说明"
    }}
-3. 多步plan间如有依赖，用result_var实现数据流，即上一步的result_var变量将被下一步通过input引用实现依赖传递。禁止凭空捏造上下文中不存在的变量作为某一步的输入。
-4. 在返回之前再做一遍判断，如果最后的结果是tool返回的数据，则你还需要加一步llm_answer，用大模型将返回的数据转换为医生容易阅读的形态再返回给用户。注意，医生通常关注和患者本身相关的病情等数据，对于数据是不是FHIR资源数据，格式是不是符合FHIR标准，以及数据中的审计、版本、是不是由工具生成的这一类信息不关注，应当在生成意图描述时详细要求大模型不要描述FHIR协议相关的数据特征，以医生的需要来总结和描述数据。
-5. 最终输出格式：
+5. 多步plan间如有依赖，用result_var实现数据流，即上一步的result_var变量将被下一步通过input引用实现依赖传递。禁止凭空捏造上下文中不存在的变量作为某一步的输入。
+6. 在返回之前再做一遍判断，如果最后的结果是tool返回的数据，则你还需要加一步llm_answer，用大模型将返回的数据转换为医生容易阅读的形态再返回给用户。注意，医生通常关注和患者本身相关的病情等数据，对于数据是不是FHIR资源数据，格式是不是符合FHIR标准，以及数据中的审计、版本、是不是由工具生成的这一类信息不关注，应当在生成意图描述时详细要求大模型不要描述FHIR协议相关的数据特征，以医生的需要来总结和描述数据。
+7. 最终输出格式：
 {{
   "plan": [step1, step2, ...],
   "explanation": "简要说明你的计划拆解思路"
 }}
-仅输出严格JSON格式plan和explanation，不要输出其他内容，不要输出"```json"这样的标签。
+仅输出严格JSON格式plan和explanation，禁止输出其他内容，禁止输出"```json"这样的标签，禁止将结果包裹在其它元素内如'raw':'```json结果```'。只要json报文。
+
+注意，如果要评估用药风险或者回答报销相关问题，需要用FHIR的$everything操作获取患者的完整文档，不要只查用药信息。
+另外，医生刚刚接诊，要求查看患者信息时，先不要查询完整档案，查询Patient资源获取基本信息即可。
+在对药物进行风险与报销可行性分析时，应明确说明医生要检查的是哪些药物。
 """
 
     async with cl.Step(name="执行计划生成Agent", type="llm") as step:
         #step.input = prompt
         stream = await client.chat.completions.create(
-            model="qwen-plus",
+            model=llm_model,
             messages=[
                 {"role": "system", "content": "你是一个计划生成Agent，只负责输出JSON结构计划"},
                 {"role": "user", "content": prompt},

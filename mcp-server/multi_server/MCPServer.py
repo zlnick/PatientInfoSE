@@ -10,11 +10,21 @@ import base64
 from typing import Dict, List, Any
 import json
 import requests
+from dashscope import TextEmbedding, Generation
+# 导入InterSystems IRIS Python驱动
+import iris as irisnative
 
 load_dotenv()
 
 # Create an MCP server
-mcp = FastMCP("MCP Server on IRIS")
+mcp = FastMCP("MCP Server on IRIS",host=os.getenv("FASTMCP_host"),port=os.getenv("FASTMCP_port"))
+connection = irisnative.connect(
+    hostname=os.getenv("IRIS_HOSTNAME"), 
+    port=int(os.getenv("IRIS_PORT")), 
+    namespace=os.getenv("IRIS_NAMESPACE"), 
+    username=os.getenv("IRIS_USERNAME"), 
+    password=os.getenv("IRIS_PASSWORD")
+)
 
 # 连接IRIS上被暴露的表元数据
 def get_table_meta(url,namespace,scheme):
@@ -86,12 +96,65 @@ async def get_iris_apis() -> Dict :
         except Exception as e:
             print(f"启动检查失败: {str(e)}")
 
+# 获取文本的嵌入向量
+def get_embedding(texts):
+        """获取文本的嵌入向量"""
+        # DashScope Embedding API调用
+        response = TextEmbedding.call(
+            model="text-embedding-v2",  # Qwen3 Embedding专用模型
+            input=texts,
+            api_key=os.getenv("DASHSCOPE_API_KEY")
+        )
+        
+        if response.status_code == 200:
+            # 提取嵌入向量
+            embeddings = [item["embedding"] for item in response.output["embeddings"]]
+            return embeddings
+        else:
+            raise Exception(f"Embedding API error: {response.code}, {response.message}")
 
+# 根据药品名称查询药品报销规则
+@mcp.tool()
+async def query_drug_insurance_info(drugName: str) -> dict:
+    """
+    根据药品名称查询药品报销规则。一次只能查询一种药品的报销规则。
+    :param drugName: 药品名称（如 '地高辛'或'左奥硝唑氯化钠'等）
+    :return: 报销规则知识库。其中会包含1~5条相关药品的报销规则知识，格式如：
+        ['左奥硝唑氯化钠的报销约束是:限二线用药。', '奥硝唑氯化钠的报销约束是:nan', '甲硝唑氯化钠的报销约束是:nan', '替硝唑氯化钠的报销约束是:nan', '奥硝唑的报销约束是:nan']
+    """
+    # 获取查询的嵌入
+    query_embedding = get_embedding(drugName)[0]
+    query_embedding_str = ",".join(map(str, query_embedding))
+    #print(query_embedding_str)
+    # 使用IRIS的向量相似度搜索功能
+    # 假设IRIS已启用向量搜索功能，这里使用余弦相似度
+    cursor = connection.cursor()
+    sqlStr = """
+            SELECT TOP ? RuleInsurance, VECTOR_DOT_PRODUCT(TO_VECTOR(?,float),DrugEmbedding) AS Similarity
+            FROM Demo.DrugInfo
+            ORDER BY Similarity DESC
+            """
+    cursor.execute(
+        sqlStr,
+        [5,query_embedding_str]
+    )
+    results = cursor.fetchall()
+    #print(results)
+    cursor.close()
+    # 处理结果
+    retrieved_docs = ""
+    for row in results:
+        
+        retrieved_docs = retrieved_docs+row[0]
+    #print(retrieved_docs)
+    return retrieved_docs
+
+# 查询FHIR服务器上的指定资源，支持传入过滤条件。
 @mcp.tool()
 async def query_fhir(resource_type: str, filters: dict) -> dict:
     """
     查询FHIR服务器上的指定资源，支持传入过滤条件。
-    患者用药可以用MedicationStatement来查询。
+    患者用药可以用MedicationStatement和MedicationRequest来查询。
     :param resource_type: FHIR资源类型（如 'Observation', 'Patient'）
     :param filters: 查询过滤条件（如 {'subject': 'Patient/794', 'code': '85354-9', 'date': 'ge2015-06-03'}。）
         注意，id、资源id这样的条件不对应参数identifier，而应该使用参数id，如{'id': '794'}
@@ -158,12 +221,17 @@ async def query_sql(sqlStatement: str)-> dict:
                 timeout=10
             )
             response.raise_for_status()
-            print(f"执行SQL查询! 状态码: {response.status_code}")
+            #print(f"执行SQL查询! 状态码: {response.status_code}")
             spec = response.text
             return spec
         except Exception as e:
             print(f"执行SQL失败: {str(e)}")
 
+# 正确执行协程的方式
+async def test():
+    #result = await query_drug_insurance_info("左奥硝唑氯化钠")  # 使用await获取结果
+    result = await query_drug_insurance_info("尼洛替尼")  # 使用await获取结果
+    print(result)
 
 if __name__ == "__main__":
 
@@ -216,6 +284,9 @@ if __name__ == "__main__":
     func = query_sql
     func.__doc__ = desc
     mcp.add_tool(func, name=func.__name__)
+
+    #asyncio.run(test())
+
     # 以sse模式启动MCP服务器
     mcp.run(
         transport="sse"

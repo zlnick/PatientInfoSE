@@ -48,8 +48,11 @@ ClassMethod GenOrders(patientId As %String, entId As %String) As %Status
 ClassMethod testRun() As %Status
 {
     Set sc = ..clearData()
-    Set patId = "Patient/794"
-    Set entId = "Encounter/795"
+    Set patId = "Patient/1594"
+    Set entId = "Encounter/1595"
+    Set sc = ..GenOrders(patId,entId)
+    Set patId = "Patient/1594"
+    Set entId = "Encounter/1600"
     Set sc = ..GenOrders(patId,entId)
     Quit sc
 }

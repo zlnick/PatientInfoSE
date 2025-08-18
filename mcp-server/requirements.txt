@@ -5,3 +5,4 @@ mcp[cli]
 fastmcp
 uv
 intersystems-irispython
+dashscope

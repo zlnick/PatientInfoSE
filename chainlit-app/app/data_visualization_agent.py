@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-async def generate_interactive_plotly_chart(data_description, chart_request,client):
+async def generate_interactive_plotly_chart(data_description, chart_request,client,llm_model):
     """
     生成交互式Plotly图表并显示在Chainlit界面
     
@@ -65,7 +65,7 @@ async def generate_interactive_plotly_chart(data_description, chart_request,clie
     async with cl.Step("生成图表Agent:") as step:
         try:
             stream = await client.chat.completions.create(
-                model="qwen-plus",
+                model=llm_model,
                 messages=[
                     {"role": "user", "content": prompt}
                 ],

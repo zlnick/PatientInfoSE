@@ -58,7 +58,7 @@ def read_excel_data(file_path):
         logging.error(error_msg)
         raise
 
-def insert_data_by_row(df):
+def insert_data(df, batch_size=100):
     """按行打印数据，每行显示列名和对应的值"""
     if df.empty:
         print("Excel文件中没有数据")
@@ -79,9 +79,15 @@ def insert_data_by_row(df):
     for index, row in df.iterrows():
         row_number = index + 1  # 行号从1开始
         print(f"处理第 {row_number} 行数据")
-        
+
+        # 检查备注是否为空（包括None、空字符串、仅空白字符的情况）
+        remark = row['备注']
+        if pd.isna(remark) or str(remark).strip() == '':
+            print(f"第 {row_number} 行备注为空，跳过插入")
+            continue
+
         # 提取药品名称和备注，组合成字符串
-        drug_item = f"{row['药品名称']}:{row['备注']}"
+        drug_item = f"{row['药品名称']}的报销约束是:{row['备注']}"
         ruleEmbedding = get_embedding(drug_item)
         embedding_str = ",".join(map(str, ruleEmbedding))
         # 执行插入（这里仅传入组合后的列表，根据实际表结构调整参数）
@@ -100,6 +106,7 @@ def get_embedding(texts):
             embeddings = [item["embedding"] for item in response.output["embeddings"]]
             return embeddings
         else:
+            print(texts)
             raise Exception(f"Embedding API error: {response.code}, {response.message}")
 
 def main():
@@ -114,7 +121,7 @@ def main():
         # 读取Excel数据
         df = read_excel_data(excel_file)
         # 按行转换并插入数据
-        insert_data_by_row(df)
+        insert_data(df,50)
         print(f"数据处理完成，共 {len(df)} 条记录")
     except Exception as e:
         print(f"操作失败：{str(e)}")

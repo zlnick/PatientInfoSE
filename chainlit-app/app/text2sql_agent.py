@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import asyncio
 from openai import AsyncOpenAI
 
-async def generate_sql_query(question: str, schema_info: str, client: AsyncOpenAI) -> str:
+async def generate_sql_query(question: str, schema_info: str, client: AsyncOpenAI,llm_model) -> str:
     """
     将自然语言问题转换为SQL查询语句
     :param question: 自然语言问题
@@ -26,7 +26,7 @@ async def generate_sql_query(question: str, schema_info: str, client: AsyncOpenA
     """
     
     completion = await client.chat.completions.create(
-        model="qwen-plus",
+        model=llm_model,
         messages=[
             {"role": "system", "content": "你是一个专业的SQL生成器"},
             {"role": "user", "content": prompt}
@@ -48,7 +48,7 @@ async def execute_sql_query(sql: str, db_connection) -> list:
     except Exception as e:
         return [f"SQL执行错误: {str(e)}"]
 
-async def text2sql_agent(question: str, schema_info: str, client: AsyncOpenAI, db_connection) -> list:
+async def text2sql_agent(question: str, schema_info: str, client: AsyncOpenAI, db_connection,llm_model) -> list:
     """
     text2sql agent主函数
     :param question: 自然语言问题
@@ -57,7 +57,7 @@ async def text2sql_agent(question: str, schema_info: str, client: AsyncOpenAI, d
     :param db_connection: 数据库连接
     :return: 查询结果
     """
-    sql = await generate_sql_query(question, schema_info, client)
+    sql = await generate_sql_query(question, schema_info, client,llm_model)
     results = await execute_sql_query(sql, db_connection)
     return {
         "sql": sql,

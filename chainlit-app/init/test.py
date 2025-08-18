@@ -7,9 +7,1214 @@ import iris as irisnative
 
 load_dotenv()
 
+tested_patient = """
+{
+    "resourceType": "Bundle",
+    "id": "00a9474c-7a59-11f0-8244-0242ac140003",
+    "type": "searchset",
+    "timestamp": "2025-08-16T04:25:13Z",
+    "total": 21,
+    "link": [
+        {
+            "relation": "self",
+            "url": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Patient/1594/$everything"
+        }
+    ],
+    "entry": [
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Patient/1594",
+            "resource": {
+                "resourceType": "Patient",
+                "id": "1594",
+                "name": [
+                    {
+                        "use": "official",
+                        "family": "张",
+                        "given": [
+                            "三"
+                        ]
+                    }
+                ],
+                "gender": "male",
+                "birthDate": "1980-01-15",
+                "address": [
+                    {
+                        "use": "home",
+                        "line": [
+                            "健康路88号"
+                        ],
+                        "city": "北京市",
+                        "district": "海淀区",
+                        "postalCode": "100080"
+                    }
+                ],
+                "telecom": [
+                    {
+                        "system": "phone",
+                        "value": "13800138000",
+                        "use": "mobile"
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/1595",
+            "resource": {
+                "resourceType": "Encounter",
+                "id": "1595",
+                "status": "finished",
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "IMP",
+                    "display": "Inpatient"
+                },
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/encounter-type",
+                                "code": "ADMS",
+                                "display": "Admission"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "period": {
+                    "start": "2023-03-10T08:30:00+08:00",
+                    "end": "2023-03-20T10:00:00+08:00"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10",
+                                "code": "I10",
+                                "display": "原发性高血压"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Observation/1596",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "1596",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2345-7",
+                            "display": "胆固醇, 血清"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1595"
+                },
+                "effectiveDateTime": "2023-03-11T09:15:00+08:00",
+                "valueQuantity": {
+                    "value": 5.2,
+                    "unit": "mmol/L",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mmol/L"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/DiagnosticReport/1597",
+            "resource": {
+                "resourceType": "DiagnosticReport",
+                "id": "1597",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/diagnostic-service-sections",
+                                "code": "RAD",
+                                "display": "Radiology"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "36598-0",
+                            "display": "胸部X线检查"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1595"
+                },
+                "effectiveDateTime": "2023-03-12T14:30:00+08:00",
+                "issued": "2023-03-12T16:45:00+08:00",
+                "conclusion": "双肺纹理略增粗，未见明显实变影",
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Condition/1598",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "1598",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "I10",
+                            "display": "原发性高血压"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1595"
+                },
+                "onsetDateTime": "2023-03-10T08:30:00+08:00",
+                "recorder": {
+                    "reference": "Practitioner/p1"
+                },
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/MedicationRequest/1599",
+            "resource": {
+                "resourceType": "MedicationRequest",
+                "id": "1599",
+                "status": "active",
+                "intent": "order",
+                "medicationCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "314049",
+                            "display": "硝苯地平"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1595"
+                },
+                "authoredOn": "2023-03-10T10:15:00+08:00",
+                "requester": {
+                    "reference": "Practitioner/p1"
+                },
+                "dosageInstruction": [
+                    {
+                        "text": "每日一次，每次10mg，口服",
+                        "timing": {
+                            "repeat": {
+                                "frequency": 1,
+                                "period": 1,
+                                "periodUnit": "d"
+                            }
+                        },
+                        "route": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/routes",
+                                    "code": "PO",
+                                    "display": "Oral"
+                                }
+                            ]
+                        },
+                        "doseAndRate": [
+                            {
+                                "doseQuantity": {
+                                    "value": 10,
+                                    "unit": "mg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mg"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/1600",
+            "resource": {
+                "resourceType": "Encounter",
+                "id": "1600",
+                "status": "finished",
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "IMP",
+                    "display": "Inpatient"
+                },
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/encounter-type",
+                                "code": "ADMS",
+                                "display": "Admission"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "period": {
+                    "start": "2023-07-05T09:00:00+08:00",
+                    "end": "2023-07-12T11:30:00+08:00"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10",
+                                "code": "E11.9",
+                                "display": "2型糖尿病，无并发症"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Observation/1601",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "1601",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2345-7",
+                            "display": "胆固醇, 血清"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1600"
+                },
+                "effectiveDateTime": "2023-07-06T08:45:00+08:00",
+                "valueQuantity": {
+                    "value": 7.8,
+                    "unit": "mmol/L",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mmol/L"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/DiagnosticReport/1602",
+            "resource": {
+                "resourceType": "DiagnosticReport",
+                "id": "1602",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/diagnostic-service-sections",
+                                "code": "LAB",
+                                "display": "Laboratory"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "14647-2",
+                            "display": "血糖检测"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1600"
+                },
+                "effectiveDateTime": "2023-07-07T10:20:00+08:00",
+                "issued": "2023-07-07T11:30:00+08:00",
+                "conclusion": "空腹血糖明显升高，符合糖尿病表现",
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Condition/1603",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "1603",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "E11.9",
+                            "display": "2型糖尿病，无并发症"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1600"
+                },
+                "onsetDateTime": "2023-07-05T09:00:00+08:00",
+                "recorder": {
+                    "reference": "Practitioner/p1"
+                },
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/MedicationRequest/1604",
+            "resource": {
+                "resourceType": "MedicationRequest",
+                "id": "1604",
+                "status": "active",
+                "intent": "order",
+                "medicationCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "6809",
+                            "display": "二甲双胍"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1600"
+                },
+                "authoredOn": "2023-07-05T14:20:00+08:00",
+                "requester": {
+                    "reference": "Practitioner/p1"
+                },
+                "dosageInstruction": [
+                    {
+                        "text": "每日三次，每次500mg，口服，饭后服用",
+                        "timing": {
+                            "repeat": {
+                                "frequency": 3,
+                                "period": 1,
+                                "periodUnit": "d"
+                            }
+                        },
+                        "route": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/routes",
+                                    "code": "PO",
+                                    "display": "Oral"
+                                }
+                            ]
+                        },
+                        "doseAndRate": [
+                            {
+                                "doseQuantity": {
+                                    "value": 500,
+                                    "unit": "mg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mg"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/1605",
+            "resource": {
+                "resourceType": "Encounter",
+                "id": "1605",
+                "status": "finished",
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "AMB",
+                    "display": "Ambulatory"
+                },
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/encounter-type",
+                                "code": "ROUTINE",
+                                "display": "Routine"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "period": {
+                    "start": "2023-04-15T14:00:00+08:00",
+                    "end": "2023-04-15T14:45:00+08:00"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10",
+                                "code": "I10",
+                                "display": "原发性高血压"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Observation/1606",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "1606",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "vital-signs",
+                                "display": "Vital Signs"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "8480-6",
+                            "display": "收缩压"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1605"
+                },
+                "effectiveDateTime": "2023-04-15T14:10:00+08:00",
+                "valueQuantity": {
+                    "value": 145,
+                    "unit": "mmHg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mmHg"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/DiagnosticReport/1607",
+            "resource": {
+                "resourceType": "DiagnosticReport",
+                "id": "1607",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/diagnostic-service-sections",
+                                "code": "LAB",
+                                "display": "Laboratory"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2345-7",
+                            "display": "胆固醇, 血清"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1605"
+                },
+                "effectiveDateTime": "2023-04-15T14:30:00+08:00",
+                "issued": "2023-04-15T14:40:00+08:00",
+                "conclusion": "胆固醇水平较住院期间有所下降，但仍高于正常范围",
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Condition/1608",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "1608",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "I10",
+                            "display": "原发性高血压"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1605"
+                },
+                "onsetDateTime": "2023-04-15T14:00:00+08:00",
+                "recorder": {
+                    "reference": "Practitioner/p1"
+                },
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/MedicationRequest/1609",
+            "resource": {
+                "resourceType": "MedicationRequest",
+                "id": "1609",
+                "status": "active",
+                "intent": "order",
+                "medicationCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "314049",
+                            "display": "硝苯地平"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1605"
+                },
+                "authoredOn": "2023-04-15T14:45:00+08:00",
+                "requester": {
+                    "reference": "Practitioner/p1"
+                },
+                "dosageInstruction": [
+                    {
+                        "text": "每日一次，每次10mg，口服",
+                        "timing": {
+                            "repeat": {
+                                "frequency": 1,
+                                "period": 1,
+                                "periodUnit": "d"
+                            }
+                        },
+                        "route": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/routes",
+                                    "code": "PO",
+                                    "display": "Oral"
+                                }
+                            ]
+                        },
+                        "doseAndRate": [
+                            {
+                                "doseQuantity": {
+                                    "value": 10,
+                                    "unit": "mg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mg"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "dispenseRequest": {
+                    "quantity": {
+                        "value": 30,
+                        "unit": "片"
+                    },
+                    "expectedSupplyDuration": {
+                        "value": 30,
+                        "unit": "天",
+                        "system": "http://unitsofmeasure.org",
+                        "code": "d"
+                    }
+                },
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/1610",
+            "resource": {
+                "resourceType": "Encounter",
+                "id": "1610",
+                "status": "finished",
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "AMB",
+                    "display": "Ambulatory"
+                },
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/encounter-type",
+                                "code": "ROUTINE",
+                                "display": "Routine"
+                            }
+                        ]
+                    }
+                ],
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "period": {
+                    "start": "2023-08-20T09:30:00+08:00",
+                    "end": "2023-08-20T10:15:00+08:00"
+                },
+                "reasonCode": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/icd-10",
+                                "code": "E11.9",
+                                "display": "2型糖尿病，无并发症"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Observation/1611",
+            "resource": {
+                "resourceType": "Observation",
+                "id": "1611",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                                "code": "laboratory",
+                                "display": "Laboratory"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2345-7",
+                            "display": "胆固醇, 血清"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1610"
+                },
+                "effectiveDateTime": "2023-08-20T09:40:00+08:00",
+                "valueQuantity": {
+                    "value": 6.5,
+                    "unit": "mmol/L",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mmol/L"
+                },
+                "interpretation": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                                "code": "H",
+                                "display": "High"
+                            }
+                        ]
+                    }
+                ],
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/DiagnosticReport/1612",
+            "resource": {
+                "resourceType": "DiagnosticReport",
+                "id": "1612",
+                "status": "final",
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/diagnostic-service-sections",
+                                "code": "LAB",
+                                "display": "Laboratory"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "14647-2",
+                            "display": "血糖检测"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1610"
+                },
+                "effectiveDateTime": "2023-08-20T09:50:00+08:00",
+                "issued": "2023-08-20T10:00:00+08:00",
+                "conclusion": "血糖水平较住院期间有所改善，但仍需继续药物治疗和饮食控制",
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Condition/1613",
+            "resource": {
+                "resourceType": "Condition",
+                "id": "1613",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "verificationStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+                            "code": "confirmed",
+                            "display": "Confirmed"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "E11.9",
+                            "display": "2型糖尿病，无并发症"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1610"
+                },
+                "onsetDateTime": "2023-08-20T09:30:00+08:00",
+                "recorder": {
+                    "reference": "Practitioner/p1"
+                },
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        },
+        {
+            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/MedicationRequest/1614",
+            "resource": {
+                "resourceType": "MedicationRequest",
+                "id": "1614",
+                "status": "active",
+                "intent": "order",
+                "medicationCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                            "code": "6809",
+                            "display": "二甲双胍"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1594"
+                },
+                "encounter": {
+                    "reference": "Encounter/1610"
+                },
+                "authoredOn": "2023-08-20T10:15:00+08:00",
+                "requester": {
+                    "reference": "Practitioner/p1"
+                },
+                "dosageInstruction": [
+                    {
+                        "text": "每日三次，每次500mg，口服，饭后服用",
+                        "timing": {
+                            "repeat": {
+                                "frequency": 3,
+                                "period": 1,
+                                "periodUnit": "d"
+                            }
+                        },
+                        "route": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/routes",
+                                    "code": "PO",
+                                    "display": "Oral"
+                                }
+                            ]
+                        },
+                        "doseAndRate": [
+                            {
+                                "doseQuantity": {
+                                    "value": 500,
+                                    "unit": "mg",
+                                    "system": "http://unitsofmeasure.org",
+                                    "code": "mg"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "dispenseRequest": {
+                    "quantity": {
+                        "value": 90,
+                        "unit": "片"
+                    },
+                    "expectedSupplyDuration": {
+                        "value": 30,
+                        "unit": "天",
+                        "system": "http://unitsofmeasure.org",
+                        "code": "d"
+                    }
+                },
+                "meta": {
+                    "lastUpdated": "2025-08-16T03:55:19Z",
+                    "versionId": "1"
+                }
+            },
+            "search": {
+                "mode": "include"
+            }
+        }
+    ]
+}
+"""
+
 class IRISRAG:
     def __init__(self, host="localhost", port=1980, namespace="MCP", username="superuser", password="SYS"):
-        print(os.getenv("DASHSCOPE_API_KEY"))
+        #print(os.getenv("DASHSCOPE_API_KEY"))
         """初始化IRIS连接"""
         self.documents = []  # 本地缓存文档（可选）
         
@@ -93,6 +1298,7 @@ class IRISRAG:
             SELECT TOP ? Id, Content, VECTOR_DOT_PRODUCT(TO_VECTOR(?,float),Embedding) AS Similarity
             FROM DrugInfo.Insurance
             ORDER BY Similarity DESC
+            where Similarity > 0.5
             """
         cursor.execute(
             sqlStr,
@@ -115,27 +1321,31 @@ class IRISRAG:
     def generate_answer(self, query, context_docs, patInfo):
         """使用Qwen-Plus生成答案"""
         # 构建prompt，包含上下文和问题
-        print(context_docs)
+        #print(context_docs)
         context = "\n\n".join([doc["RuleInsurance"] for doc in context_docs])
         prompt = f"""基于以下上下文信息回答医保拒付风险相关的问题：
 
-{context}
+医保规则信息：{context}
 
 问题：{query}
 
 患者信息:{patInfo}
 
-要依据获取到的医保规则仔细分析，确认约束是不是都得到了满足。
+要依据获取到的医保规则仔细分析，确认报销约束是不是都得到了满足。
 例如盐酸右美托咪定的报销条件为：成人术前镇静/抗焦虑，则只有患者为成人且有手术医嘱且术前有类似焦虑的诊断或并病程记录才算满足条件。
-如果上下文中没有明确的医保报销约束，则根据你的常识判断。
+又如溴芬酸钠的报销条件为：限眼部手术后炎症。如果患者信息中没有眼部手术的记录或没有眼部手术后炎症的信息，则未满足报销条件。
+如果上下文中没有明确的医保报销约束，则根据你的常识和患者的实际病情判断用药的适应症是否存在。如果患者病情中存在适应症，则没有医保拒付风险；如果患者病情中不存在适应症，则有医保拒付风险。
+对于二线用药，如果患者病情中没有一线用药记录或没有一线用药无效的记录，也应判断为没有适应症。在解释部分应该加入一些解释，说明如果要用这种二线药物，对应的一线药物是什么。
+只要有一个药物存在拒付风险，则整体来看就有拒付风险。
 回答时要简洁，按顺序包括三个方面内容：
-1. 结论：根据当前上下文中的信息明确回答是否有医保拒付风险
-2. 规则：上下文中获得的医保规则是什么样的
-3. 解释：如果有拒付风险，说明原因。如果没有拒付风险，说明支撑条件是什么。
+1. 结论：根据当前上下文中的信息明确回答是否有医保拒付风险，只回答有没有风险即可。
+2. 规则：针对问题中的药物（而不是医保规则信息中的药物）逐条解释从上下文中获得的医保规则是什么样的。在说明医保规则时应严格复述上下文中记录的规则文本，不要创造内容。
+3. 解释：针对问题中的每一种药物，如果有拒付风险，说明原因。如果没有拒付风险，说明支撑条件是什么。
 
-回答："""
+"""
         #print(prompt)
         # 调用Qwen-Plus生成答案
+        #print(prompt)
         response = Generation.call(
             model="qwen-plus",  # 使用Qwen-Plus模型
             prompt=prompt,
@@ -152,7 +1362,8 @@ class IRISRAG:
         """执行完整的RAG查询"""
         # 1. 检索相关文档
         relevant_docs = self.retrieve(query, top_k)
-        
+        print("aaa")
+        print(relevant_docs)
         # 2. 生成最终答案
         answer = self.generate_answer(query, relevant_docs)
         
@@ -169,7 +1380,7 @@ class IRISRAG:
         """执行完整的RAG查询"""
         question = f"我想给患者开{query}，会有医保拒付的风险吗？"
         # 1. 检索相关文档
-        relevant_docs = self.drug_retrieve(query, top_k)
+        relevant_docs = self.drug_retrieve(question, top_k)
         
         # 2. 生成最终答案
         answer = self.generate_answer(f"我想给患者开{query}，会有医保拒付的风险吗？", relevant_docs, tested_patient)
@@ -198,6 +1409,7 @@ class IRISRAG:
             [top_k,query_embedding_str]
         )
         results = cursor.fetchall()
+        #print("查询结果:")
         #print(results)
         cursor.close()
         # 处理结果
@@ -207,1381 +1419,8 @@ class IRISRAG:
                 "RuleInsurance": row[0],
                 "score": row[1]  # 相似度分数
             })
-        
+        print(retrieved_docs)
         return retrieved_docs
-
-tested_patient = """
-{
-    "resourceType": "Bundle",
-    "id": "047955c2-77fd-11f0-9612-0242ac140003",
-    "type": "searchset",
-    "timestamp": "2025-08-13T04:21:43Z",
-    "link": [
-        {
-            "relation": "self",
-            "url": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Patient/794/$everything"
-        }
-    ],
-    "entry": [
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Patient/794",
-            "resource": {
-                "resourceType": "Patient",
-                "id": "794",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:45Z",
-                    "versionId": "1"
-                },
-                "text": {
-                    "status": "generated",
-                    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Generated by <a href=\"https://github.com/synthetichealth/synthea\">Synthea</a>.Version identifier: master-branch-latest\n .   Person seed: 6428298403214954790  Population seed: 1748932747118</div>"
-                },
-                "extension": [
-                    {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-                        "extension": [
-                            {
-                                "url": "ombCategory",
-                                "valueCoding": {
-                                    "system": "urn:oid:2.16.840.1.113883.6.238",
-                                    "code": "2054-5",
-                                    "display": "Black or African American"
-                                }
-                            },
-                            {
-                                "url": "text",
-                                "valueString": "Black or African American"
-                            }
-                        ]
-                    },
-                    {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-                        "extension": [
-                            {
-                                "url": "ombCategory",
-                                "valueCoding": {
-                                    "system": "urn:oid:2.16.840.1.113883.6.238",
-                                    "code": "2186-5",
-                                    "display": "Not Hispanic or Latino"
-                                }
-                            },
-                            {
-                                "url": "text",
-                                "valueString": "Not Hispanic or Latino"
-                            }
-                        ]
-                    },
-                    {
-                        "url": "http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName",
-                        "valueString": "欣然 丁"
-                    },
-                    {
-                        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                        "valueCode": "M"
-                    },
-                    {
-                        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
-                        "valueAddress": {
-                            "city": "Maynard",
-                            "state": "Massachusetts",
-                            "country": "US"
-                        }
-                    },
-                    {
-                        "url": "http://synthetichealth.github.io/synthea/disability-adjusted-life-years",
-                        "valueDecimal": 0.18519836746375412
-                    },
-                    {
-                        "url": "http://synthetichealth.github.io/synthea/quality-adjusted-life-years",
-                        "valueDecimal": 66.81480163253624
-                    }
-                ],
-                "identifier": [
-                    {
-                        "system": "https://github.com/synthetichealth/synthea",
-                        "value": "e7cb4686-bbab-7568-cb01-457c5e212c86"
-                    },
-                    {
-                        "type": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                                    "code": "MR",
-                                    "display": "Medical Record Number"
-                                }
-                            ],
-                            "text": "Medical Record Number"
-                        },
-                        "system": "http://hospital.smarthealthit.org",
-                        "value": "e7cb4686-bbab-7568-cb01-457c5e212c86"
-                    },
-                    {
-                        "type": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                                    "code": "SS",
-                                    "display": "Social Security Number"
-                                }
-                            ],
-                            "text": "Social Security Number"
-                        },
-                        "system": "http://hl7.org/fhir/sid/us-ssn",
-                        "value": "999-13-6876"
-                    },
-                    {
-                        "type": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                                    "code": "DL",
-                                    "display": "Driver's license number"
-                                }
-                            ],
-                            "text": "Driver's license number"
-                        },
-                        "system": "urn:oid:2.16.840.1.113883.4.3.25",
-                        "value": "S99914803"
-                    },
-                    {
-                        "type": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-                                    "code": "PPN",
-                                    "display": "Passport Number"
-                                }
-                            ],
-                            "text": "Passport Number"
-                        },
-                        "system": "http://hl7.org/fhir/sid/passport-USA",
-                        "value": "X80823618X"
-                    }
-                ],
-                "name": [
-                    {
-                        "use": "official",
-                        "family": "韩",
-                        "given": [
-                            "伟泽"
-                        ],
-                        "prefix": [
-                            "Mr."
-                        ]
-                    }
-                ],
-                "telecom": [
-                    {
-                        "system": "phone",
-                        "value": "555-873-1430",
-                        "use": "home"
-                    }
-                ],
-                "gender": "male",
-                "birthDate": "1957-07-06",
-                "address": [
-                    {
-                        "extension": [
-                            {
-                                "url": "http://hl7.org/fhir/StructureDefinition/geolocation",
-                                "extension": [
-                                    {
-                                        "url": "latitude",
-                                        "valueDecimal": 42.107978311855355
-                                    },
-                                    {
-                                        "url": "longitude",
-                                        "valueDecimal": -71.93300216625047
-                                    }
-                                ]
-                            }
-                        ],
-                        "line": [
-                            "915 孙 Hollow"
-                        ],
-                        "city": "Charlton",
-                        "state": "MA",
-                        "postalCode": "00000",
-                        "country": "US"
-                    }
-                ],
-                "maritalStatus": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
-                            "code": "D",
-                            "display": "Divorced"
-                        }
-                    ],
-                    "text": "Divorced"
-                },
-                "multipleBirthBoolean": false,
-                "communication": [
-                    {
-                        "language": {
-                            "coding": [
-                                {
-                                    "system": "urn:ietf:bcp:47",
-                                    "code": "en-US",
-                                    "display": "English (United States)"
-                                }
-                            ],
-                            "text": "English (United States)"
-                        }
-                    }
-                ]
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/795",
-            "resource": {
-                "resourceType": "Encounter",
-                "id": "795",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:48Z",
-                    "versionId": "1"
-                },
-                "identifier": [
-                    {
-                        "use": "official",
-                        "system": "https://github.com/synthetichealth/synthea",
-                        "value": "6a95f6de-b045-ca37-fd41-ff951669942b"
-                    }
-                ],
-                "status": "finished",
-                "class": {
-                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                    "code": "AMB"
-                },
-                "type": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "410620009",
-                                "display": "Well child visit (procedure)"
-                            }
-                        ],
-                        "text": "Well child visit (procedure)"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/794",
-                    "display": "Mr. 伟泽 韩"
-                },
-                "participant": [
-                    {
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                                        "code": "PPRF",
-                                        "display": "primary performer"
-                                    }
-                                ],
-                                "text": "primary performer"
-                            }
-                        ],
-                        "period": {
-                            "start": "1974-08-24T05:21:50+08:00",
-                            "end": "1974-08-24T05:36:50+08:00"
-                        },
-                        "individual": {
-                            "reference": "Practitioner/788",
-                            "display": "Dr. 忠林 郭"
-                        }
-                    }
-                ],
-                "period": {
-                    "start": "1974-08-24T05:21:50+08:00",
-                    "end": "1974-08-24T05:36:50+08:00"
-                },
-                "location": [
-                    {
-                        "location": {
-                            "reference": "Location/773",
-                            "display": "RENAISSANCE PRIMARY CARE LLC"
-                        }
-                    }
-                ],
-                "serviceProvider": {
-                    "reference": "Organization/772",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Practitioner/788",
-            "resource": {
-                "resourceType": "Practitioner",
-                "id": "788",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:14Z",
-                    "versionId": "1"
-                },
-                "extension": [
-                    {
-                        "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
-                        "valueInteger": 57
-                    }
-                ],
-                "identifier": [
-                    {
-                        "system": "http://hl7.org/fhir/sid/us-npi",
-                        "value": "9999949495"
-                    }
-                ],
-                "active": true,
-                "name": [
-                    {
-                        "family": "郭",
-                        "given": [
-                            "忠林"
-                        ],
-                        "prefix": [
-                            "Dr."
-                        ]
-                    }
-                ],
-                "telecom": [
-                    {
-                        "extension": [
-                            {
-                                "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-direct",
-                                "valueBoolean": true
-                            }
-                        ],
-                        "system": "email",
-                        "value": "忠林.郭@example.com",
-                        "use": "work"
-                    }
-                ],
-                "address": [
-                    {
-                        "line": [
-                            "11-15 SANDERSDALE ROAD"
-                        ],
-                        "city": "WORCESTER",
-                        "state": "MA",
-                        "postalCode": "016032467",
-                        "country": "US"
-                    }
-                ],
-                "gender": "male"
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Condition/796",
-            "resource": {
-                "resourceType": "Condition",
-                "id": "796",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-encounter-diagnosis"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:45Z",
-                    "versionId": "1"
-                },
-                "clinicalStatus": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
-                            "code": "active"
-                        }
-                    ]
-                },
-                "verificationStatus": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
-                            "code": "confirmed"
-                        }
-                    ]
-                },
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
-                            }
-                        ]
-                    }
-                ],
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://snomed.info/sct",
-                            "code": "160968000",
-                            "display": "Risk activity involvement (finding)"
-                        }
-                    ],
-                    "text": "Risk activity involvement (finding)"
-                },
-                "subject": {
-                    "reference": "Patient/794"
-                },
-                "encounter": {
-                    "reference": "Encounter/795"
-                },
-                "onsetDateTime": "1974-08-24T06:36:35+08:00",
-                "recordedDate": "1974-08-24T06:36:35+08:00"
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Claim/799",
-            "resource": {
-                "resourceType": "Claim",
-                "id": "799",
-                "status": "active",
-                "type": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/claim-type",
-                            "code": "professional"
-                        }
-                    ]
-                },
-                "use": "claim",
-                "patient": {
-                    "reference": "Patient/794",
-                    "display": "伟泽 韩"
-                },
-                "billablePeriod": {
-                    "start": "1974-08-24T05:21:50+08:00",
-                    "end": "1974-08-24T05:36:50+08:00"
-                },
-                "created": "1974-08-24T05:36:50+08:00",
-                "provider": {
-                    "reference": "Organization/772",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                },
-                "priority": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/processpriority",
-                            "code": "normal"
-                        }
-                    ]
-                },
-                "facility": {
-                    "reference": "Location/773",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                },
-                "diagnosis": [
-                    {
-                        "sequence": 1,
-                        "diagnosisReference": {
-                            "reference": "Condition/796"
-                        }
-                    }
-                ],
-                "insurance": [
-                    {
-                        "sequence": 1,
-                        "focal": true,
-                        "coverage": {
-                            "display": "Cigna Health"
-                        }
-                    }
-                ],
-                "item": [
-                    {
-                        "sequence": 1,
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "410620009",
-                                    "display": "Well child visit (procedure)"
-                                }
-                            ],
-                            "text": "Well child visit (procedure)"
-                        },
-                        "encounter": [
-                            {
-                                "reference": "Encounter/795"
-                            }
-                        ]
-                    },
-                    {
-                        "sequence": 2,
-                        "diagnosisSequence": [
-                            1
-                        ],
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "160968000",
-                                    "display": "Risk activity involvement (finding)"
-                                }
-                            ],
-                            "text": "Risk activity involvement (finding)"
-                        }
-                    }
-                ],
-                "total": {
-                    "value": 1451.41,
-                    "currency": "USD"
-                },
-                "meta": {
-                    "lastUpdated": "2025-06-03T07:04:50Z",
-                    "versionId": "1"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/ExplanationOfBenefit/800",
-            "resource": {
-                "resourceType": "ExplanationOfBenefit",
-                "id": "800",
-                "contained": [
-                    {
-                        "resourceType": "ServiceRequest",
-                        "id": "referral",
-                        "status": "completed",
-                        "intent": "order",
-                        "subject": {
-                            "reference": "urn:uuid:e7cb4686-bbab-7568-cb01-457c5e212c86"
-                        },
-                        "requester": {
-                            "reference": "Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999949495"
-                        },
-                        "performer": [
-                            {
-                                "reference": "Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999949495"
-                            }
-                        ]
-                    },
-                    {
-                        "resourceType": "Coverage",
-                        "id": "coverage",
-                        "status": "active",
-                        "type": {
-                            "text": "Cigna Health"
-                        },
-                        "beneficiary": {
-                            "reference": "urn:uuid:e7cb4686-bbab-7568-cb01-457c5e212c86"
-                        },
-                        "payor": [
-                            {
-                                "display": "Cigna Health"
-                            }
-                        ]
-                    }
-                ],
-                "identifier": [
-                    {
-                        "system": "https://bluebutton.cms.gov/resources/variables/clm_id",
-                        "value": "b3b90798-f0ad-5e4e-94bb-6da10cb9e527"
-                    },
-                    {
-                        "system": "https://bluebutton.cms.gov/resources/identifier/claim-group",
-                        "value": "99999999999"
-                    }
-                ],
-                "status": "active",
-                "type": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/claim-type",
-                            "code": "professional"
-                        }
-                    ]
-                },
-                "use": "claim",
-                "patient": {
-                    "reference": "Patient/794"
-                },
-                "billablePeriod": {
-                    "start": "1974-08-24T05:36:50+08:00",
-                    "end": "1975-08-24T05:36:50+08:00"
-                },
-                "created": "1974-08-24T05:36:50+08:00",
-                "insurer": {
-                    "display": "Cigna Health"
-                },
-                "provider": {
-                    "reference": "Practitioner/788"
-                },
-                "referral": {
-                    "reference": "#referral"
-                },
-                "facility": {
-                    "reference": "Location/773",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                },
-                "claim": {
-                    "reference": "Claim/799"
-                },
-                "outcome": "complete",
-                "careTeam": [
-                    {
-                        "sequence": 1,
-                        "provider": {
-                            "reference": "Practitioner/788"
-                        },
-                        "role": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/claimcareteamrole",
-                                    "code": "primary",
-                                    "display": "Primary provider"
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "diagnosis": [
-                    {
-                        "sequence": 1,
-                        "diagnosisReference": {
-                            "reference": "Condition/796"
-                        },
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype",
-                                        "code": "principal"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "insurance": [
-                    {
-                        "focal": true,
-                        "coverage": {
-                            "reference": "#coverage",
-                            "display": "Cigna Health"
-                        }
-                    }
-                ],
-                "item": [
-                    {
-                        "sequence": 1,
-                        "category": {
-                            "coding": [
-                                {
-                                    "system": "https://bluebutton.cms.gov/resources/variables/line_cms_type_srvc_cd",
-                                    "code": "1",
-                                    "display": "Medical care"
-                                }
-                            ]
-                        },
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "410620009",
-                                    "display": "Well child visit (procedure)"
-                                }
-                            ],
-                            "text": "Well child visit (procedure)"
-                        },
-                        "servicedPeriod": {
-                            "start": "1974-08-24T05:21:50+08:00",
-                            "end": "1974-08-24T05:36:50+08:00"
-                        },
-                        "locationCodeableConcept": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/ex-serviceplace",
-                                    "code": "19",
-                                    "display": "Off Campus-Outpatient Hospital"
-                                }
-                            ]
-                        },
-                        "encounter": [
-                            {
-                                "reference": "Encounter/795"
-                            }
-                        ]
-                    },
-                    {
-                        "sequence": 2,
-                        "diagnosisSequence": [
-                            1
-                        ],
-                        "category": {
-                            "coding": [
-                                {
-                                    "system": "https://bluebutton.cms.gov/resources/variables/line_cms_type_srvc_cd",
-                                    "code": "1",
-                                    "display": "Medical care"
-                                }
-                            ]
-                        },
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "160968000",
-                                    "display": "Risk activity involvement (finding)"
-                                }
-                            ],
-                            "text": "Risk activity involvement (finding)"
-                        },
-                        "servicedPeriod": {
-                            "start": "1974-08-24T05:21:50+08:00",
-                            "end": "1974-08-24T05:36:50+08:00"
-                        },
-                        "locationCodeableConcept": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/ex-serviceplace",
-                                    "code": "19",
-                                    "display": "Off Campus-Outpatient Hospital"
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "total": [
-                    {
-                        "category": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/adjudication",
-                                    "code": "submitted",
-                                    "display": "Submitted Amount"
-                                }
-                            ],
-                            "text": "Submitted Amount"
-                        },
-                        "amount": {
-                            "value": 1451.41,
-                            "currency": "USD"
-                        }
-                    }
-                ],
-                "payment": {
-                    "amount": {
-                        "value": 0.0,
-                        "currency": "USD"
-                    }
-                },
-                "meta": {
-                    "lastUpdated": "2025-06-03T07:04:50Z",
-                    "versionId": "1"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/801",
-            "resource": {
-                "resourceType": "Encounter",
-                "id": "801",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:51Z",
-                    "versionId": "1"
-                },
-                "identifier": [
-                    {
-                        "use": "official",
-                        "system": "https://github.com/synthetichealth/synthea",
-                        "value": "9435cce4-5a6e-933a-4355-963e6870d2e1"
-                    }
-                ],
-                "status": "finished",
-                "class": {
-                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                    "code": "AMB"
-                },
-                "type": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "162673000",
-                                "display": "General examination of patient (procedure)"
-                            }
-                        ],
-                        "text": "General examination of patient (procedure)"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/794",
-                    "display": "Mr. 伟泽 韩"
-                },
-                "participant": [
-                    {
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                                        "code": "PPRF",
-                                        "display": "primary performer"
-                                    }
-                                ],
-                                "text": "primary performer"
-                            }
-                        ],
-                        "period": {
-                            "start": "1975-08-30T05:21:50+08:00",
-                            "end": "1975-08-30T06:00:15+08:00"
-                        },
-                        "individual": {
-                            "reference": "Practitioner/788",
-                            "display": "Dr. 忠林 郭"
-                        }
-                    }
-                ],
-                "period": {
-                    "start": "1975-08-30T05:21:50+08:00",
-                    "end": "1975-08-30T06:00:15+08:00"
-                },
-                "location": [
-                    {
-                        "location": {
-                            "reference": "Location/773",
-                            "display": "RENAISSANCE PRIMARY CARE LLC"
-                        }
-                    }
-                ],
-                "serviceProvider": {
-                    "reference": "Organization/772",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Condition/802",
-            "resource": {
-                "resourceType": "Condition",
-                "id": "802",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-encounter-diagnosis"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:45Z",
-                    "versionId": "1"
-                },
-                "clinicalStatus": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
-                            "code": "active"
-                        }
-                    ]
-                },
-                "verificationStatus": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
-                            "code": "confirmed"
-                        }
-                    ]
-                },
-                "category": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
-                                "code": "encounter-diagnosis",
-                                "display": "Encounter Diagnosis"
-                            }
-                        ]
-                    }
-                ],
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://snomed.info/sct",
-                            "code": "224299000",
-                            "display": "Received higher education (finding)"
-                        }
-                    ],
-                    "text": "Received higher education (finding)"
-                },
-                "subject": {
-                    "reference": "Patient/794"
-                },
-                "encounter": {
-                    "reference": "Encounter/801"
-                },
-                "onsetDateTime": "1975-08-30T06:00:15+08:00",
-                "recordedDate": "1975-08-30T06:00:15+08:00"
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Claim/805",
-            "resource": {
-                "resourceType": "Claim",
-                "id": "805",
-                "status": "active",
-                "type": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/claim-type",
-                            "code": "professional"
-                        }
-                    ]
-                },
-                "use": "claim",
-                "patient": {
-                    "reference": "Patient/794",
-                    "display": "伟泽 韩"
-                },
-                "billablePeriod": {
-                    "start": "1975-08-30T05:21:50+08:00",
-                    "end": "1975-08-30T06:00:15+08:00"
-                },
-                "created": "1975-08-30T06:00:15+08:00",
-                "provider": {
-                    "reference": "Organization/772",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                },
-                "priority": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/processpriority",
-                            "code": "normal"
-                        }
-                    ]
-                },
-                "facility": {
-                    "reference": "Location/773",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                },
-                "diagnosis": [
-                    {
-                        "sequence": 1,
-                        "diagnosisReference": {
-                            "reference": "Condition/802"
-                        }
-                    }
-                ],
-                "insurance": [
-                    {
-                        "sequence": 1,
-                        "focal": true,
-                        "coverage": {
-                            "display": "Cigna Health"
-                        }
-                    }
-                ],
-                "item": [
-                    {
-                        "sequence": 1,
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "162673000",
-                                    "display": "General examination of patient (procedure)"
-                                }
-                            ],
-                            "text": "General examination of patient (procedure)"
-                        },
-                        "encounter": [
-                            {
-                                "reference": "Encounter/801"
-                            }
-                        ]
-                    },
-                    {
-                        "sequence": 2,
-                        "diagnosisSequence": [
-                            1
-                        ],
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "224299000",
-                                    "display": "Received higher education (finding)"
-                                }
-                            ],
-                            "text": "Received higher education (finding)"
-                        }
-                    }
-                ],
-                "total": {
-                    "value": 1081.28,
-                    "currency": "USD"
-                },
-                "meta": {
-                    "lastUpdated": "2025-06-03T07:04:51Z",
-                    "versionId": "1"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/ExplanationOfBenefit/806",
-            "resource": {
-                "resourceType": "ExplanationOfBenefit",
-                "id": "806",
-                "contained": [
-                    {
-                        "resourceType": "ServiceRequest",
-                        "id": "referral",
-                        "status": "completed",
-                        "intent": "order",
-                        "subject": {
-                            "reference": "urn:uuid:e7cb4686-bbab-7568-cb01-457c5e212c86"
-                        },
-                        "requester": {
-                            "reference": "Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999949495"
-                        },
-                        "performer": [
-                            {
-                                "reference": "Practitioner?identifier=http://hl7.org/fhir/sid/us-npi|9999949495"
-                            }
-                        ]
-                    },
-                    {
-                        "resourceType": "Coverage",
-                        "id": "coverage",
-                        "status": "active",
-                        "type": {
-                            "text": "Cigna Health"
-                        },
-                        "beneficiary": {
-                            "reference": "urn:uuid:e7cb4686-bbab-7568-cb01-457c5e212c86"
-                        },
-                        "payor": [
-                            {
-                                "display": "Cigna Health"
-                            }
-                        ]
-                    }
-                ],
-                "identifier": [
-                    {
-                        "system": "https://bluebutton.cms.gov/resources/variables/clm_id",
-                        "value": "99cc81eb-ceee-90a4-9acc-d9871e9e7423"
-                    },
-                    {
-                        "system": "https://bluebutton.cms.gov/resources/identifier/claim-group",
-                        "value": "99999999999"
-                    }
-                ],
-                "status": "active",
-                "type": {
-                    "coding": [
-                        {
-                            "system": "http://terminology.hl7.org/CodeSystem/claim-type",
-                            "code": "professional"
-                        }
-                    ]
-                },
-                "use": "claim",
-                "patient": {
-                    "reference": "Patient/794"
-                },
-                "billablePeriod": {
-                    "start": "1975-08-30T06:00:15+08:00",
-                    "end": "1976-08-30T06:00:15+08:00"
-                },
-                "created": "1975-08-30T06:00:15+08:00",
-                "insurer": {
-                    "display": "Cigna Health"
-                },
-                "provider": {
-                    "reference": "Practitioner/788"
-                },
-                "referral": {
-                    "reference": "#referral"
-                },
-                "facility": {
-                    "reference": "Location/773",
-                    "display": "RENAISSANCE PRIMARY CARE LLC"
-                },
-                "claim": {
-                    "reference": "Claim/805"
-                },
-                "outcome": "complete",
-                "careTeam": [
-                    {
-                        "sequence": 1,
-                        "provider": {
-                            "reference": "Practitioner/788"
-                        },
-                        "role": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/claimcareteamrole",
-                                    "code": "primary",
-                                    "display": "Primary provider"
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "diagnosis": [
-                    {
-                        "sequence": 1,
-                        "diagnosisReference": {
-                            "reference": "Condition/802"
-                        },
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype",
-                                        "code": "principal"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "insurance": [
-                    {
-                        "focal": true,
-                        "coverage": {
-                            "reference": "#coverage",
-                            "display": "Cigna Health"
-                        }
-                    }
-                ],
-                "item": [
-                    {
-                        "sequence": 1,
-                        "category": {
-                            "coding": [
-                                {
-                                    "system": "https://bluebutton.cms.gov/resources/variables/line_cms_type_srvc_cd",
-                                    "code": "1",
-                                    "display": "Medical care"
-                                }
-                            ]
-                        },
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "162673000",
-                                    "display": "General examination of patient (procedure)"
-                                }
-                            ],
-                            "text": "General examination of patient (procedure)"
-                        },
-                        "servicedPeriod": {
-                            "start": "1975-08-30T05:21:50+08:00",
-                            "end": "1975-08-30T06:00:15+08:00"
-                        },
-                        "locationCodeableConcept": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/ex-serviceplace",
-                                    "code": "19",
-                                    "display": "Off Campus-Outpatient Hospital"
-                                }
-                            ]
-                        },
-                        "encounter": [
-                            {
-                                "reference": "Encounter/801"
-                            }
-                        ]
-                    },
-                    {
-                        "sequence": 2,
-                        "diagnosisSequence": [
-                            1
-                        ],
-                        "category": {
-                            "coding": [
-                                {
-                                    "system": "https://bluebutton.cms.gov/resources/variables/line_cms_type_srvc_cd",
-                                    "code": "1",
-                                    "display": "Medical care"
-                                }
-                            ]
-                        },
-                        "productOrService": {
-                            "coding": [
-                                {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "224299000",
-                                    "display": "Received higher education (finding)"
-                                }
-                            ],
-                            "text": "Received higher education (finding)"
-                        },
-                        "servicedPeriod": {
-                            "start": "1975-08-30T05:21:50+08:00",
-                            "end": "1975-08-30T06:00:15+08:00"
-                        },
-                        "locationCodeableConcept": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/ex-serviceplace",
-                                    "code": "19",
-                                    "display": "Off Campus-Outpatient Hospital"
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "total": [
-                    {
-                        "category": {
-                            "coding": [
-                                {
-                                    "system": "http://terminology.hl7.org/CodeSystem/adjudication",
-                                    "code": "submitted",
-                                    "display": "Submitted Amount"
-                                }
-                            ],
-                            "text": "Submitted Amount"
-                        },
-                        "amount": {
-                            "value": 1081.28,
-                            "currency": "USD"
-                        }
-                    }
-                ],
-                "payment": {
-                    "amount": {
-                        "value": 0.0,
-                        "currency": "USD"
-                    }
-                },
-                "meta": {
-                    "lastUpdated": "2025-06-03T07:04:51Z",
-                    "versionId": "1"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        },
-        {
-            "fullUrl": "http://localhost:52880/csp/healthshare/fhirserver/fhir/r4/Encounter/807",
-            "resource": {
-                "resourceType": "Encounter",
-                "id": "807",
-                "meta": {
-                    "profile": [
-                        "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
-                    ],
-                    "lastUpdated": "2025-06-03T07:04:51Z",
-                    "versionId": "1"
-                },
-                "identifier": [
-                    {
-                        "use": "official",
-                        "system": "https://github.com/synthetichealth/synthea",
-                        "value": "74fc0953-48b8-d8c2-5356-f80b27a4c160"
-                    }
-                ],
-                "status": "finished",
-                "class": {
-                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                    "code": "IMP"
-                },
-                "type": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://snomed.info/sct",
-                                "code": "32485007",
-                                "display": "住院就诊"
-                            }
-                        ],
-                        "text": "住院就诊"
-                    }
-                ],
-                "subject": {
-                    "reference": "Patient/794",
-                    "display": "Mr. 伟泽 韩"
-                },
-                "participant": [
-                    {
-                        "type": [
-                            {
-                                "coding": [
-                                    {
-                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                                        "code": "PPRF",
-                                        "display": "primary performer"
-                                    }
-                                ],
-                                "text": "primary performer"
-                            }
-                        ],
-                        "period": {
-                            "start": "1987-07-11T06:21:50+09:00",
-                            "end": "1987-07-12T06:21:50+09:00"
-                        },
-                        "individual": {
-                            "reference": "Practitioner/786",
-                            "display": "Dr. 嘉轩 钱"
-                        }
-                    }
-                ],
-                "period": {
-                    "start": "1987-07-11T06:21:50+09:00",
-                    "end": "1987-07-12T06:21:50+09:00"
-                },
-                "location": [
-                    {
-                        "location": {
-                            "reference": "Location/771",
-                            "display": "VIBRA HOSPITAL OF WESTERN MASSACHUSETTS LLC"
-                        }
-                    }
-                ],
-                "serviceProvider": {
-                    "reference": "Organization/770",
-                    "display": "VIBRA HOSPITAL OF WESTERN MASSACHUSETTS LLC"
-                }
-            },
-            "search": {
-                "mode": "include"
-            }
-        }
-    ]
-}
-"""
 
 
 # 使用示例
@@ -1608,18 +1447,20 @@ if __name__ == "__main__":
         
         # 执行RAG查询
         #query = "什么是RAG技术？"
-        query = "水合氯醛灌肠剂"
+        query = "左奥硝唑氯化钠"
         #result = rag_system.rag_query(query)
         result = rag_system.drug_query(query,5)
-        print(result)
+        #print(result)
         # 输出结果
         print(f"问题: {query}\n")
         print(f"答案: {result['answer']}\n")
+        """
         print("参考文档:")
         for i, doc in enumerate(result["sources"]):
             print(f"文档 {i+1} (相似度: {doc['score']}):")
             print(f"{doc['RuleInsurance']}\n")
-    
+        """
+
     finally:
         # 确保关闭连接
         rag_system.close()

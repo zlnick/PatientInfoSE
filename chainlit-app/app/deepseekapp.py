@@ -63,7 +63,7 @@ insurance_expert_prompt = f"""
 
 回答时要简洁，按顺序包括三个方面内容：
 1. 结论：根据当前上下文中的信息明确回答是否有医保拒付风险，只回答有没有风险即可。
-2. 规则：只针对问题中被询问的药物进行回答，禁止基于医保规则信息中的药物进行回答。逐条解释对应的医保规则是什么样的。在说明医保规则时应严格引用上下文中记录的规则文本，不要创造内容。如果上下文中没有返回对应的药物的信息，可以当作没有特定的医保规则，不要列出其它药物的医保规则。禁止列出没被问到的药品的信息。l
+2. 规则：针对问题中被询问的药物，而不是医保规则信息中的药物，逐条解释医保规则是什么样的。在说明医保规则时应严格引用上下文中记录的规则文本，不要创造内容。如果上下文中没有返回对应的药物的信息，可以当作没有特定的医保规则，不要列出其它药物的医保规则。禁止列出没被问到的药品的信息。l
 3. 解释：针对问题中被问到的每一种药物，如果有拒付风险，说明原因。如果没有拒付风险，说明支撑条件是什么。不要列出没有被问到的药物的信息。
 """
 
@@ -84,8 +84,8 @@ ctx = IRISContextManager(
 
 # LLM客户端
 client = AsyncOpenAI(
-    api_key=os.getenv("Qwen_API_KEY"), 
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    api_key=os.getenv("DEEPSEEK_API_KEY"), 
+    base_url="https://api.deepseek.com/v1"
 )
 
 # 音频理解（Qwen-Audio）客户端（由于Qwen不兼容OpenAI音频接口，需额外构建客户端）
@@ -239,7 +239,7 @@ async def on_message(msg: cl.Message):
 
     if can_answer:
         # 直接基于上下文生成回答
-        answer = await generate_context_answer(history, msg.content, client,llm_model)
+        answer = await generate_context_answer(history, msg.content, client, llm_model)
         visual_tag = '需要图表'
         need_visual = False
         # 保存并返回回答
@@ -251,7 +251,7 @@ async def on_message(msg: cl.Message):
         # 调用Agent绘图
         if need_visual:
             print("准备画图")
-            await generate_interactive_plotly_chart(answer,original_quest,client,llm_model)
+            await generate_interactive_plotly_chart(answer,original_quest,client, llm_model)
 
         return  # 结束处理，不再执行后续工具调用
 
@@ -266,8 +266,12 @@ async def on_message(msg: cl.Message):
 
     # 生成多步 plan
     plan_json = await generate_plan(history, msg.content, tool_list,client,llm_model)
-    plan = plan_json.get("plan", [])
-    explanation = plan_json.get("explanation", "") 
+    raw_content = plan_json.get("raw", [])
+    json_str = raw_content.strip().replace('```json', '').replace('```', '').strip()
+    json_data = json.loads(json_str)
+    plan = json_data.get("plan", [])
+    explanation = json_data.get("explanation", "")
+
     print("????????")
     print(plan_json)
     process_steps = [f"多步执行计划：{json.dumps(plan, ensure_ascii=False, indent=2)}", f"计划说明：{explanation}"]
